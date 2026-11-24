@@ -3,30 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hồ Sơ Cá Nhân</title>
+  <title>Hồ Sơ Cá Nhân - Hoài Khương</title>
   <style>
     /* Biến màu sắc (CSS Variables - tên đại diện cho mã màu để đổi giao diện nhanh) */
     :root {
       --bg-color: #0d1117;
-      --card-bg: #161b22;
-      --border-color: #30363d;
+      --card-bg: rgba(22, 27, 34, 0.82);
+      --border-color: rgba(139, 148, 158, 0.25);
       --text-main: #e6edf3;
       --text-sub: #8b949e;
       --accent: #2f81f7;
-      --tag-bg: #21262d;
+      --accent-glow: rgba(47, 129, 247, 0.22);
+      --tag-bg: rgba(33, 38, 45, 0.88);
     }
 
     /* Giao diện nền sáng khi bấm nút chuyển đổi */
     body.light-mode {
       --bg-color: #f4f6f8;
-      --card-bg: #ffffff;
-      --border-color: #d0d7de;
+      --card-bg: rgba(255, 255, 255, 0.86);
+      --border-color: rgba(31, 35, 40, 0.16);
       --text-main: #1f2328;
       --text-sub: #656d76;
       --accent: #0969da;
-      --tag-bg: #eaeef2;
+      --accent-glow: rgba(9, 105, 218, 0.18);
+      --tag-bg: rgba(234, 238, 242, 0.92);
     }
 
+    /* Reset mặc định cho mọi phần tử */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -40,11 +43,18 @@
       display: flex;
       justify-content: center;
       padding: 30px 15px;
+      min-height: 100vh;
+      /* Nhớ kiểm tra file ảnh anh/0001.jpg có tồn tại đúng tên trên kho GitHub hay không */
       background-image: linear-gradient(rgba(13, 17, 23, 0.78), rgba(13, 17, 23, 0.78)), url("anh/0001.jpg");
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
       transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* Làm lớp phủ nền sáng hơn khi chuyển sang chế độ Sáng */
+    body.light-mode {
+      background-image: linear-gradient(rgba(244, 246, 248, 0.82), rgba(244, 246, 248, 0.82)), url("anh/0001.jpg");
     }
 
     /* Khung lưới Bento chia các ô thông tin */
@@ -54,18 +64,24 @@
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 16px;
+      align-content: start;
     }
 
+    /* Hiệu ứng kính mờ + viền công nghệ cho từng ô */
     .box {
       background-color: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border: 1px solid var(--border-color);
       border-radius: 16px;
       padding: 22px;
-      transition: transform 0.2s, border-color 0.2s;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
     }
 
     .box:hover {
+      transform: translateY(-3px);
       border-color: var(--accent);
+      box-shadow: 0 10px 26px var(--accent-glow);
     }
 
     /* Ô trên cùng chiếm trọn 2 cột */
@@ -97,6 +113,7 @@
       color: #fff;
       overflow: hidden;
       flex-shrink: 0;
+      border: 2px solid var(--accent);
     }
 
     .avatar img {
@@ -107,12 +124,44 @@
 
     .name-area h1 {
       font-size: 22px;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
 
-    .name-area p {
+    /* Dòng trạng thái + chữ tự chạy */
+    .status-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       color: var(--text-sub);
       font-size: 14px;
+      min-height: 20px;
+    }
+
+    .dot-online {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #2ea043;
+      box-shadow: 0 0 8px #2ea043;
+      flex-shrink: 0;
+      animation: nhapNhay 1.6s infinite;
+    }
+
+    @keyframes nhapNhay {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.85); }
+    }
+
+    .typing-cursor {
+      display: inline-block;
+      color: var(--accent);
+      font-weight: bold;
+      animation: conTro 0.8s infinite;
+    }
+
+    @keyframes conTro {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
     }
 
     .theme-btn {
@@ -124,6 +173,12 @@
       cursor: pointer;
       font-size: 13px;
       font-weight: 600;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .theme-btn:hover {
+      border-color: var(--accent);
+      transform: translateY(-1px);
     }
 
     .box-title {
@@ -137,7 +192,7 @@
 
     .info-list {
       list-style: none;
-      line-height: 1.8;
+      line-height: 1.85;
       font-size: 15px;
     }
 
@@ -153,6 +208,23 @@
       border-radius: 20px;
       font-size: 13px;
       border: 1px solid var(--border-color);
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .tag:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    /* Ô hoạt động buổi tối chiếm trọn 2 cột */
+    .night-box {
+      grid-column: span 2;
+    }
+
+    .night-note {
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--text-main);
     }
 
     /* Ô liên hệ dưới cùng chiếm trọn 2 cột */
@@ -181,6 +253,12 @@
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
     }
 
     .action-btn.secondary {
@@ -189,13 +267,20 @@
       border: 1px solid var(--border-color);
     }
 
+    .action-btn.secondary:hover {
+      border-color: var(--accent);
+    }
+
     /* Tự động xếp thành 1 cột dọc khi mở trên điện thoại */
     @media (max-width: 600px) {
       .bento-container {
         grid-template-columns: 1fr;
       }
-      .header-box, .contact-box {
+      .header-box, .night-box, .contact-box {
         grid-column: span 1;
+      }
+      body {
+        background-attachment: scroll;
       }
     }
   </style>
@@ -207,13 +292,15 @@
     <div class="box header-box">
       <div class="profile-left">
         <div class="avatar">
-          <!-- Muốn dùng ảnh thật: bỏ dấu chú thích dòng dưới và đổi tên file avatar.jpg -->
-           <img src="avatar.jpg" alt="Avatar">
-          
+          <img src="avatar.jpg" alt="Avatar">
         </div>
         <div class="name-area">
           <h1>Hoài Khương</h1>
-          <p>Bạc Liêu • Thích vọc công nghệ & tự do</p>
+          <div class="status-line">
+            <span class="dot-online" title="Đang hoạt động"></span>
+            <span id="typing-text">Bạc Liêu • Thích vọc công nghệ &amp; tự do</span>
+            <span class="typing-cursor">|</span>
+          </div>
         </div>
       </div>
       <button class="theme-btn" onclick="doiMauNen()">🌓 Đổi Sáng / Tối</button>
@@ -224,7 +311,7 @@
       <div class="box-title">📌 Thông tin</div>
       <ul class="info-list">
         <li><strong>Quê quán:</strong> Bạc Liêu</li>
-        <li><strong>Công việc:</strong> Giao hàng & Tự do</li>
+        <li><strong>Công việc:</strong> Giao hàng &amp; Tự do</li>
         <li><strong>Đang tìm hiểu:</strong> Code web, tự động hóa</li>
       </ul>
     </div>
@@ -241,7 +328,15 @@
       </div>
     </div>
 
-    <!-- Ô 4: Liên hệ & Nút bấm -->
+    <!-- Ô 4: Thông tin buổi tối đang làm -->
+    <div class="box night-box">
+      <div class="box-title">🌙 Buổi tối thường làm</div>
+      <p class="night-note" id="noi-dung-buoi-toi">
+        Đang vọc code web, tùy chỉnh giao diện và thư giãn cuối ngày.
+      </p>
+    </div>
+
+    <!-- Ô 5: Liên hệ & Nút bấm -->
     <div class="box contact-box">
       <div>
         <div class="box-title" style="margin-bottom: 4px;">📬 Kết nối</div>
@@ -265,10 +360,47 @@
 
     // Chức năng 2: Bấm nút tự động copy số điện thoại vào bộ nhớ tạm
     function copySoDienThoai() {
-      const sdt = "09xxxxxxxx"; // Sửa số thật của bạn ở đây
+      const sdt = "0944396154";
       navigator.clipboard.writeText(sdt);
       document.getElementById("trang-thai-copy").innerHTML = "✅ Đã chép số: <strong>" + sdt + "</strong>";
     }
+
+    // Chức năng 3: Hiệu ứng gõ chữ luân phiên dưới tên
+    const danhSachCau = [
+      "Bạc Liêu • Thích vọc công nghệ & tự do",
+      "Đang học code web & tự động hóa",
+      "Buổi tối vọc máy, giải trí & chill"
+    ];
+    let chiSoCau = 0;
+    let chiSoKyTu = 0;
+    let dangXoa = false;
+    const elTyping = document.getElementById("typing-text");
+
+    function chayHieuUngGoChu() {
+      const cauHienTai = danhSachCau[chiSoCau];
+
+      if (!dangXoa) {
+        chiSoKyTu++;
+        elTyping.textContent = cauHienTai.slice(0, chiSoKyTu);
+        if (chiSoKyTu === cauHienTai.length) {
+          dangXoa = true;
+          setTimeout(chayHieuUngGoChu, 1800);
+          return;
+        }
+      } else {
+        chiSoKyTu--;
+        elTyping.textContent = cauHienTai.slice(0, chiSoKyTu);
+        if (chiSoKyTu === 0) {
+          dangXoa = false;
+          chiSoCau = (chiSoCau + 1) % danhSachCau.length;
+        }
+      }
+
+      const tocDo = dangXoa ? 35 : 65;
+      setTimeout(chayHieuUngGoChu, tocDo);
+    }
+
+    setTimeout(chayHieuUngGoChu, 1200);
   </script>
 
 </body>
