@@ -210,5 +210,579 @@
     .typing-cursor {
       display: inline-block;
       color: var(--accent);
-      font-weight
-      
+      font-weight: bold;
+      animation: conTro 0.8s infinite;
+    }
+
+    @keyframes conTro {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    .theme-btn {
+      background-color: var(--tag-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 8px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .theme-btn:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .box-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--accent);
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    .info-list {
+      list-style: none;
+      line-height: 1.85;
+      font-size: 15px;
+    }
+
+    .mini-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .stat-item {
+      background-color: var(--tag-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 11px 12px;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .stat-item:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-sub);
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      background-color: var(--tag-bg);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      border: 1px solid var(--border-color);
+      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .tag:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
+      transform: translateY(-2px);
+    }
+
+    /* Khu vực thiên hà xoay */
+    .galaxy-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .galaxy-controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .mini-btn {
+      background-color: var(--tag-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .mini-btn:hover {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    #galaxy-canvas {
+      width: 100%;
+      height: 240px;
+      display: block;
+      background: radial-gradient(circle at center, rgba(24, 34, 62, 0.72), rgba(5, 8, 16, 0.96));
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      cursor: grab;
+    }
+
+    #galaxy-canvas:active {
+      cursor: grabbing;
+    }
+
+    .galaxy-note {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    .night-note {
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--text-main);
+    }
+
+    /* Bảng giới thiệu địa danh Bạc Liêu */
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .place-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .place-table th {
+      background-color: var(--table-head);
+      color: var(--text-main);
+      font-weight: 700;
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    .place-table td {
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border-color);
+      line-height: 1.55;
+      vertical-align: top;
+    }
+
+    .place-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .place-table tbody tr:hover {
+      background-color: var(--table-row-hover);
+    }
+
+    /* Ô liên hệ dưới cùng */
+    .contact-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      background-color: var(--accent);
+      color: #06101e;
+      text-decoration: none;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
+      transition: transform 0.2s ease, filter 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    body.light-mode .action-btn {
+      color: #fff;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.55);
+    }
+
+    .action-btn.copied {
+      background-color: #22c55e;
+      color: #06180d;
+      box-shadow: 0 0 16px rgba(34, 197, 94, 0.45);
+    }
+
+    .action-btn.secondary {
+      background-color: var(--tag-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      box-shadow: none;
+    }
+
+    .action-btn.secondary:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+    }
+
+    /* Tự động xếp thành 1 cột dọc khi mở trên điện thoại */
+    @media (max-width: 640px) {
+      .bento-container {
+        grid-template-columns: 1fr;
+      }
+      .full-span {
+        grid-column: span 1;
+      }
+      .mini-stats {
+        grid-template-columns: 1fr;
+      }
+      body {
+        background-attachment: scroll;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bento-container">
+    <!-- Ô 1: Ảnh đại diện & Tên -->
+    <div class="box header-box full-span">
+      <div class="profile-left">
+        <div class="avatar">
+          <img src="avatar.jpg" alt="Avatar">
+        </div>
+        <div class="name-area">
+          <h1>Hoài Khương</h1>
+          <div class="status-line">
+            <span class="dot-online" title="Đang hoạt động"></span>
+            <span id="typing-text">Bạc Liêu • Thích vọc công nghệ &amp; tự do</span>
+            <span class="typing-cursor">|</span>
+          </div>
+        </div>
+      </div>
+      <button class="theme-btn" onclick="doiMauNen()">🌓 Đổi Sáng / Tối</button>
+    </div>
+
+    <!-- Ô 2: Thông tin cơ bản -->
+    <div class="box">
+      <div class="box-title">📌 Thông tin</div>
+      <ul class="info-list">
+        <li><strong>Quê quán:</strong> Bạc Liêu</li>
+        <li><strong>Công việc:</strong> Giao hàng &amp; Tự do</li>
+        <li><strong>Đang tìm hiểu:</strong> Code web, tự động hóa</li>
+      </ul>
+    </div>
+
+    <!-- Ô 3: Chỉ số & nhịp vọc -->
+    <div class="box">
+      <div class="box-title">⚡ Góc vọc &amp; phong cách</div>
+      <div class="mini-stats">
+        <div class="stat-item">
+          <div class="stat-label">Khu vực</div>
+          <div class="stat-value">Bạc Liêu</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Mảng quan tâm</div>
+          <div class="stat-value">PC &amp; Web</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Chế độ giải trí</div>
+          <div class="stat-value">ARAM &amp; Chill</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Nhịp hoạt động</div>
+          <div class="stat-value">Sáng chạy • Tối vọc</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ô 4: Sở thích (dạng thẻ tag) -->
+    <div class="box full-span">
+      <div class="box-title">🎯 Sở thích</div>
+      <div class="tags">
+        <span class="tag">🎮 Liên Minh (ARAM)</span>
+        <span class="tag">🖥️ Vọc phần cứng PC</span>
+        <span class="tag">🎣 Câu cá</span>
+        <span class="tag">📖 Đọc truyện</span>
+        <span class="tag">🎧 Nhạc Remix</span>
+      </div>
+    </div>
+
+    <!-- Ô 5: Thiên hà xoáy quay quay -->
+    <div class="box full-span">
+      <div class="galaxy-top">
+        <div class="box-title" style="margin-bottom: 0;">🌌 Thiên Hà Xoáy</div>
+        <div class="galaxy-controls">
+          <button type="button" class="mini-btn" id="nut-toc-do" onclick="doiTocDoThienHa()">⚡ Tốc độ: 1x</button>
+          <button type="button" class="mini-btn" id="nut-quay" onclick="batTatQuayThienHa()">⏸ Tạm dừng</button>
+        </div>
+      </div>
+
+      <canvas id="galaxy-canvas" width="720" height="240"></canvas>
+      <div class="galaxy-note">Rê chuột qua khung để làm lệch góc nhìn thiên hà nhẹ nhàng.</div>
+    </div>
+
+    <!-- Ô 6: Bảng giới thiệu địa danh Bạc Liêu -->
+    <div class="box full-span">
+      <div class="box-title">🗺️ Địa danh nổi bật ở Bạc Liêu</div>
+      <div class="table-wrap">
+        <table class="place-table">
+          <thead>
+            <tr>
+              <th>Địa danh</th>
+              <th>Đặc trưng nổi bật</th>
+              <th>Gợi ý trải nghiệm</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Cánh đồng quạt gió Bạc Liêu</strong></td>
+              <td>Các trụ turbine gió trắng cao vút giữa vùng ven biển lộng gió</td>
+              <td>Dạo mát, chụp ảnh check-in, ngắm cảnh đón gió biển</td>
+            </tr>
+            <tr>
+              <td><strong>Nhà Công tử Bạc Liêu</strong></td>
+              <td>Công trình kiến trúc cổ đặc trưng từ đầu thế kỷ XX gắn với giai thoại xưa</td>
+              <td>Tham quan kiến trúc cổ, tìm hiểu lịch sử và văn hóa địa phương</td>
+            </tr>
+            <tr>
+              <td><strong>Khu du lịch Nhà Mát</strong></td>
+              <td>Không gian ven biển sôi động, nhiều khu vui chơi và hàng quán</td>
+              <td>Đi dạo hóng gió, thưởng thức ẩm thực và thư giãn cuối tuần</td>
+            </tr>
+            <tr>
+              <td><strong>Quảng trường Hùng Vương</strong></td>
+              <td>Không gian rộng rãi, nổi bật với biểu tượng cây đờn kìm</td>
+              <td>Đi dạo chiều mát, chụp ảnh lưu niệm tại trung tâm thành phố</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Ô 7: Thông tin buổi tối đang làm -->
+    <div class="box full-span">
+      <div class="box-title">🌙 Buổi tối thường làm</div>
+      <p class="night-note" id="noi-dung-buoi-toi">
+        Đang vọc code web, tùy chỉnh giao diện và thư giãn cuối ngày.
+      </p>
+    </div>
+
+    <!-- Ô 8: Liên hệ & Nút bấm -->
+    <div class="box contact-box full-span">
+      <div>
+        <div class="box-title" style="margin-bottom: 4px;">📬 Kết nối</div>
+        <div id="trang-thai-copy" style="font-size: 14px; color: var(--text-sub);">
+          SĐT / Zalo: <strong style="color: var(--text-main);">0944396154</strong>
+        </div>
+      </div>
+      <div class="btn-group">
+        <button id="nut-copy-sdt" class="action-btn" onclick="copySoDienThoai()">📋 Copy SĐT</button>
+        <a class="action-btn secondary" href="https://www.facebook.com/canten.ko.501/" target="_blank">Facebook</a>
+        <a class="action-btn secondary" href="https://www.tiktok.com/@mydmd1t4" target="_blank">TikTok</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 1. Chuyển đổi giao diện Sáng / Tối
+    function doiMauNen() {
+      document.body.classList.toggle("light-mode");
+    }
+
+    // 2. Bấm nút tự động copy số điện thoại vào bộ nhớ tạm
+    function copySoDienThoai() {
+      const sdt = "0944396154";
+      const nutCopy = document.getElementById("nut-copy-sdt");
+      navigator.clipboard.writeText(sdt);
+      document.getElementById("trang-thai-copy").innerHTML = "✅ Đã chép số: <strong>" + sdt + "</strong>";
+      nutCopy.textContent = "✅ Đã chép!";
+      nutCopy.classList.add("copied");
+      setTimeout(() => {
+        nutCopy.textContent = "📋 Copy SĐT";
+        nutCopy.classList.remove("copied");
+      }, 1800);
+    }
+
+    // 3. Hiệu ứng gõ chữ luân phiên dưới tên
+    const danhSachCau = [
+      "Bạc Liêu • Thích vọc công nghệ & tự do",
+      "Đang học code web & tự động hóa",
+      "Buổi tối vọc máy, giải trí & chill"
+    ];
+    let chiSoCau = 0;
+    let chiSoKyTu = 0;
+    let dangXoa = false;
+    const elTyping = document.getElementById("typing-text");
+
+    function chayHieuUngGoChu() {
+      const cauHienTai = danhSachCau[chiSoCau];
+
+      if (!dangXoa) {
+        chiSoKyTu++;
+        elTyping.textContent = cauHienTai.slice(0, chiSoKyTu);
+        if (chiSoKyTu === cauHienTai.length) {
+          dangXoa = true;
+          setTimeout(chayHieuUngGoChu, 1800);
+          return;
+        }
+      } else {
+        chiSoKyTu--;
+        elTyping.textContent = cauHienTai.slice(0, chiSoKyTu);
+        if (chiSoKyTu === 0) {
+          dangXoa = false;
+          chiSoCau = (chiSoCau + 1) % danhSachCau.length;
+        }
+      }
+
+      setTimeout(chayHieuUngGoChu, dangXoa ? 35 : 65);
+    }
+    setTimeout(chayHieuUngGoChu, 1200);
+
+    // 4. Hiệu ứng vệt sáng chạy theo con trỏ chuột bên trong từng ô
+    document.querySelectorAll(".box").forEach((box) => {
+      box.addEventListener("mousemove", (e) => {
+        const rect = box.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        box.style.setProperty("--mx", x + "px");
+        box.style.setProperty("--my", y + "px");
+      });
+    });
+
+    // 5. Thiên hà xoáy quay quay trên Canvas
+    const gCanvas = document.getElementById("galaxy-canvas");
+    const gCtx = gCanvas.getContext("2d");
+    const nutTocDo = document.getElementById("nut-toc-do");
+    const nutQuay = document.getElementById("nut-quay");
+
+    const soNhanhXoay = 4;
+    const soHatSao = 260;
+    const bangMauSao = ["#38bdf8", "#a855f7", "#67e8f9", "#e879f9", "#e2e8f0"];
+    const cacTocDo = [1, 2, 0.5];
+    let viTriTocDo = 0;
+    let dangQuay = true;
+    let gocXoayChung = 0;
+    let lechX = 0;
+    let lechY = 0;
+
+    const danhSachSao = [];
+    for (let i = 0; i < soHatSao; i++) {
+      const banKinh = 12 + Math.pow(Math.random(), 0.72) * 105;
+      const nhanh = i % soNhanhXoay;
+      const gocNhanh = (nhanh / soNhanhXoay) * Math.PI * 2;
+      const gocXoan = banKinh * 0.048 + (Math.random() - 0.5) * 0.55;
+      danhSachSao.push({
+        banKinh: banKinh,
+        goc: gocNhanh + gocXoan,
+        tocDoRieng: 0.0045 + (115 / (banKinh + 25)) * 0.0055,
+        kichThuoc: 0.8 + Math.random() * 2.1,
+        mau: bangMauSao[i % bangMauSao.length],
+        doSang: 0.4 + Math.random() * 0.6
+      });
+    }
+
+    function doiTocDoThienHa() {
+      viTriTocDo = (viTriTocDo + 1) % cacTocDo.length;
+      nutTocDo.textContent = "⚡ Tốc độ: " + cacTocDo[viTriTocDo] + "x";
+    }
+
+    function batTatQuayThienHa() {
+      dangQuay = !dangQuay;
+      nutQuay.textContent = dangQuay ? "⏸ Tạm dừng" : "▶ Quay tiếp";
+    }
+
+    gCanvas.addEventListener("mousemove", (e) => {
+      const rect = gCanvas.getBoundingClientRect();
+      const tyLeX = (e.clientX - rect.left) / rect.width - 0.5;
+      const tyLeY = (e.clientY - rect.top) / rect.height - 0.5;
+      lechX = tyLeX * 26;
+      lechY = tyLeY * 14;
+    });
+
+    gCanvas.addEventListener("mouseleave", () => {
+      lechX = 0;
+      lechY = 0;
+    });
+
+    function veThienHa() {
+      gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+
+      const tamX = gCanvas.width / 2 + lechX;
+      const tamY = gCanvas.height / 2 + lechY;
+      const heSoToc = dangQuay ? cacTocDo[viTriTocDo] : 0;
+      gocXoayChung += 0.0025 * heSoToc;
+
+      // Vầng sáng lõi thiên hà
+      const loiSang = gCtx.createRadialGradient(tamX, tamY, 2, tamX, tamY, 56);
+      loiSang.addColorStop(0, "rgba(224, 242, 254, 0.92)");
+      loiSang.addColorStop(0.35, "rgba(56, 189, 248, 0.35)");
+      loiSang.addColorStop(0.7, "rgba(168, 85, 247, 0.14)");
+      loiSang.addColorStop(1, "rgba(9, 13, 22, 0)");
+
+      gCtx.fillStyle = loiSang;
+      gCtx.beginPath();
+      gCtx.arc(tamX, tamY, 56, 0, Math.PI * 2);
+      gCtx.fill();
+
+      // Vẽ từng ngôi sao xoay theo quỹ đạo dẹt nhẹ kiểu thiên hà nghiêng
+      for (let i = 0; i < danhSachSao.length; i++) {
+        const s = danhSachSao[i];
+        s.goc += s.tocDoRieng * heSoToc;
+        const gocHienTai = s.goc + gocXoayChung;
+
+        const x = tamX + Math.cos(gocHienTai) * s.banKinh;
+        const y = tamY + Math.sin(gocHienTai) * s.banKinh * 0.52;
+
+        gCtx.globalAlpha = s.doSang;
+        gCtx.fillStyle = s.mau;
+        gCtx.beginPath();
+        gCtx.arc(x, y, s.kichThuoc, 0, Math.PI * 2);
+        gCtx.fill();
+      }
+
+      gCtx.globalAlpha = 1;
+      requestAnimationFrame(veThienHa);
+    }
+
+    veThienHa();
+  </script>
+
+</body>
+</html>
