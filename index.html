@@ -1,788 +1,1046 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hồ Sơ Cá Nhân - Hoài Khương</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Khương — Bio & Code Universe</title>
   <style>
-    /* Biến màu sắc (CSS Variables - tên đại diện cho mã màu để đổi giao diện nhanh) */
+    /* Biến màu và hiệu ứng chung (CSS custom properties - biến tùy chỉnh trong CSS) */
     :root {
-      --bg-color: #090d16;
-      --card-bg: rgba(15, 21, 34, 0.82);
-      --border-color: rgba(56, 189, 248, 0.28);
-      --text-main: #e6edf3;
-      --text-sub: #94a3b8;
+      --bg: #07090f;
+      --surface: rgba(16, 21, 34, 0.62);
+      --surface-hover: rgba(24, 32, 52, 0.78);
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #eef2ff;
+      --muted: #94a3b8;
       --accent: #38bdf8;
       --accent-2: #a855f7;
-      --neon-soft: 0 0 14px rgba(56, 189, 248, 0.18), 0 0 28px rgba(168, 85, 247, 0.08);
-      --neon-hover: 0 0 18px rgba(56, 189, 248, 0.42), 0 0 36px rgba(168, 85, 247, 0.18);
-      --spotlight: rgba(56, 189, 248, 0.16);
-      --tag-bg: rgba(24, 34, 54, 0.9);
-      --table-head: rgba(56, 189, 248, 0.14);
-      --table-row-hover: rgba(56, 189, 248, 0.06);
+      --ok: #22c55e;
+      --radius: 20px;
     }
 
-    /* Giao diện nền sáng khi bấm nút chuyển đổi */
-    body.light-mode {
-      --bg-color: #f4f6f8;
-      --card-bg: rgba(255, 255, 255, 0.88);
-      --border-color: rgba(2, 132, 199, 0.22);
-      --text-main: #1f2328;
-      --text-sub: #57606a;
-      --accent: #0284c7;
-      --accent-2: #7e22ce;
-      --neon-soft: 0 6px 18px rgba(15, 23, 42, 0.06);
-      --neon-hover: 0 10px 24px rgba(2, 132, 199, 0.16);
-      --spotlight: rgba(2, 132, 199, 0.1);
-      --tag-bg: rgba(234, 238, 242, 0.94);
-      --table-head: rgba(2, 132, 199, 0.1);
-      --table-row-hover: rgba(2, 132, 199, 0.05);
-    }
-
-    /* Reset mặc định cho mọi phần tử */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      display: flex;
-      justify-content: center;
-      padding: 32px 15px;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
       min-height: 100vh;
-      /* Nhớ kiểm tra file ảnh anh/0001.jpg có tồn tại đúng tên trên kho GitHub hay không */
-      background-image: linear-gradient(rgba(9, 13, 22, 0.8), rgba(9, 13, 22, 0.82)), url("anh/0001.jpg");
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      transition: background-color 0.3s, color 0.3s;
+      overflow-x: hidden;
     }
 
-    body.light-mode {
-      background-image: linear-gradient(rgba(244, 246, 248, 0.84), rgba(244, 246, 248, 0.84)), url("anh/0001.jpg");
-    }
-
-    /* Khung lưới Bento chia các ô thông tin */
-    .bento-container {
-      max-width: 780px;
-      width: 100%;
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      align-content: start;
-    }
-
-    /* Kính mờ + viền neon + ánh sáng chạy theo chuột + trượt lên khi mở trang */
-    .box {
-      position: relative;
-      overflow: hidden;
-      background-color: var(--card-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 22px;
-      box-shadow: var(--neon-soft);
-      opacity: 0;
-      transform: translateY(14px);
-      animation: hienLenMuot 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-    }
-
-    /* Lớp vệt sáng đi theo con trỏ chuột */
-    .box::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 50%), var(--spotlight), transparent 70%);
-      opacity: 0;
+    /* Vệt sáng mềm chạy theo con trỏ trên toàn trang */
+    .cursor-glow {
+      position: fixed;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
       pointer-events: none;
+      z-index: 0;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.11), rgba(168, 85, 247, 0.05) 45%, transparent 70%);
       transition: opacity 0.25s ease;
     }
 
-    .box:hover::before {
+    /* Khung ngân hà tri thức tràn viền, hòa vào nền tối, không viền khung */
+    .universe-wrap {
+      position: relative;
+      width: 100%;
+      height: 440px;
+      overflow: hidden;
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 84%, transparent 100%);
+      mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 84%, transparent 100%);
+    }
+
+    #universe-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Vùng nội dung chính */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1080px;
+      margin: -60px auto 64px;
+      padding: 0 16px;
+    }
+
+    /* Thanh điều khiển ngôn ngữ & chế độ nhẹ */
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding: 10px 14px;
+      border-radius: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+    }
+
+    .lang-group, .tool-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text);
+      padding: 7px 12px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      border-color: rgba(56, 189, 248, 0.45);
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    .btn.active {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.24), rgba(168, 85, 247, 0.24));
+      border-color: rgba(56, 189, 248, 0.7);
+      box-shadow: 0 0 18px rgba(56, 189, 248, 0.18);
+    }
+
+    .shortcut-hint {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    /* Bố cục Bento grid */
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+
+    /* Thẻ kính mờ kèm ánh sáng spotlight theo chuột bên trong từng ô */
+    .card {
+      position: relative;
+      grid-column: span 6;
+      padding: 20px;
+      border-radius: var(--radius);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+      overflow: hidden;
+      transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(
+        260px circle at var(--mx, 50%) var(--my, 50%),
+        rgba(56, 189, 248, 0.14),
+        transparent 70%
+      );
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(56, 189, 248, 0.32);
+      background: var(--surface-hover);
+      transform: translateY(-2px);
+    }
+
+    .card:hover::before {
       opacity: 1;
     }
 
-    .box:hover {
-      transform: translateY(-3px);
-      border-color: var(--accent);
-      box-shadow: var(--neon-hover);
-    }
+    .span-12 { grid-column: span 12; }
+    .span-7 { grid-column: span 7; }
+    .span-5 { grid-column: span 5; }
+    .span-4 { grid-column: span 4; }
+    .span-8 { grid-column: span 8; }
 
-    /* Trễ nhịp từng ô để xuất hiện lần lượt */
-    .bento-container .box:nth-child(1) { animation-delay: 0.04s; }
-    .bento-container .box:nth-child(2) { animation-delay: 0.1s; }
-    .bento-container .box:nth-child(3) { animation-delay: 0.16s; }
-    .bento-container .box:nth-child(4) { animation-delay: 0.22s; }
-    .bento-container .box:nth-child(5) { animation-delay: 0.28s; }
-    .bento-container .box:nth-child(6) { animation-delay: 0.34s; }
-    .bento-container .box:nth-child(7) { animation-delay: 0.4s; }
-    .bento-container .box:nth-child(8) { animation-delay: 0.46s; }
-
-    @keyframes hienLenMuot {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .full-span {
-      grid-column: span 2;
-    }
-
-    .header-box {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-
-    .profile-left {
+    /* Phần đầu hồ sơ */
+    .profile-head {
       display: flex;
       align-items: center;
       gap: 18px;
+      flex-wrap: wrap;
     }
 
-    .avatar {
-      width: 82px;
-      height: 82px;
+    .avatar-box {
+      position: relative;
+      width: 84px;
+      height: 84px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 32px;
-      font-weight: bold;
-      color: #fff;
-      overflow: hidden;
       flex-shrink: 0;
-      border: 2px solid var(--accent);
-      box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
+      overflow: hidden;
+      border: 2px solid rgba(56, 189, 248, 0.65);
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.25);
+      cursor: pointer;
     }
 
-    .avatar img {
+    .avatar-box img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      display: block;
     }
 
-    .name-area h1 {
-      font-size: 23px;
-      margin-bottom: 6px;
-      text-shadow: 0 0 12px rgba(56, 189, 248, 0.28);
+    .fallback-badge {
+      display: none;
+      width: 100%;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0ea5e9, #7e22ce);
+      color: #fff;
+      font-weight: 700;
+      font-size: 1.25rem;
     }
 
-    body.light-mode .name-area h1 {
-      text-shadow: none;
+    .name-neon {
+      font-size: 1.65rem;
+      font-weight: 700;
+      text-shadow: 0 0 18px rgba(56, 189, 248, 0.35);
     }
 
-    /* Dòng trạng thái + chữ tự chạy */
-    .status-line {
+    .typewriter-line {
+      margin-top: 4px;
+      color: var(--accent);
+      font-weight: 500;
+      min-height: 1.5em;
+    }
+
+    .meta-row {
+      margin-top: 12px;
       display: flex;
       align-items: center;
-      gap: 8px;
-      color: var(--text-sub);
-      font-size: 14px;
-      min-height: 20px;
+      gap: 14px;
+      flex-wrap: wrap;
+      font-size: 0.9rem;
+      color: var(--muted);
     }
 
-    .dot-online {
+    .live-dot {
+      display: inline-block;
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background-color: #22c55e;
-      box-shadow: 0 0 10px #22c55e;
-      flex-shrink: 0;
-      animation: nhapNhay 1.6s infinite;
+      background: var(--ok);
+      box-shadow: 0 0 10px var(--ok);
+      margin-right: 6px;
     }
 
-    @keyframes nhapNhay {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.45; transform: scale(0.85); }
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 650;
+      margin-bottom: 12px;
+      color: #f8fafc;
     }
 
-    .typing-cursor {
-      display: inline-block;
-      color: var(--accent);
-      font-weight: bold;
-      animation: conTro 0.8s infinite;
+    /* Nút copy số điện thoại */
+    .phone-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      margin-top: 10px;
     }
 
-    @keyframes conTro {
-      0%, 50% { opacity: 1; }
-      51%, 100% { opacity: 0; }
-    }
-
-    .theme-btn {
-      background-color: var(--tag-bg);
-      color: var(--text-main);
-      border: 1px solid var(--border-color);
+    .copy-btn {
+      appearance: none;
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      background: rgba(56, 189, 248, 0.14);
+      color: #e0f2fe;
       padding: 8px 14px;
       border-radius: 10px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .theme-btn:hover {
-      border-color: var(--accent);
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
-      transform: translateY(-1px);
-    }
-
-    .box-title {
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: var(--accent);
-      margin-bottom: 12px;
-      font-weight: 700;
-    }
-
-    .info-list {
-      list-style: none;
-      line-height: 1.85;
-      font-size: 15px;
-    }
-
-    .mini-stats {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-
-    .stat-item {
-      background-color: var(--tag-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 11px 12px;
-      transition: border-color 0.2s ease, transform 0.2s ease;
-    }
-
-    .stat-item:hover {
-      border-color: var(--accent);
-      transform: translateY(-2px);
-    }
-
-    .stat-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-sub);
-      margin-bottom: 4px;
-    }
-
-    .stat-value {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-
-    .tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .tag {
-      background-color: var(--tag-bg);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 13px;
-      border: 1px solid var(--border-color);
-      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .tag:hover {
-      border-color: var(--accent);
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
-      transform: translateY(-2px);
-    }
-
-    /* Khu vực thiên hà xoay */
-    .galaxy-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .galaxy-controls {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .mini-btn {
-      background-color: var(--tag-bg);
-      color: var(--text-main);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 6px 12px;
-      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
-      transition: border-color 0.2s ease, transform 0.2s ease;
-    }
-
-    .mini-btn:hover {
-      border-color: var(--accent);
-      transform: translateY(-1px);
-    }
-
-    #galaxy-canvas {
-      width: 100%;
-      height: 240px;
-      display: block;
-      background: radial-gradient(circle at center, rgba(24, 34, 62, 0.72), rgba(5, 8, 16, 0.96));
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      cursor: grab;
-    }
-
-    #galaxy-canvas:active {
-      cursor: grabbing;
-    }
-
-    .galaxy-note {
-      margin-top: 10px;
-      font-size: 13px;
-      color: var(--text-sub);
-    }
-
-    .night-note {
-      font-size: 15px;
-      line-height: 1.75;
-      color: var(--text-main);
-    }
-
-    /* Bảng giới thiệu địa danh Bạc Liêu */
-    .table-wrap {
-      width: 100%;
-      overflow-x: auto;
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-    }
-
-    .place-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-      text-align: left;
-    }
-
-    .place-table th {
-      background-color: var(--table-head);
-      color: var(--text-main);
-      font-weight: 700;
-      padding: 11px 14px;
-      border-bottom: 1px solid var(--border-color);
+      transition: all 0.2s ease;
       white-space: nowrap;
     }
 
-    .place-table td {
-      padding: 11px 14px;
-      border-bottom: 1px solid var(--border-color);
-      line-height: 1.55;
-      vertical-align: top;
+    .copy-btn.copied {
+      background: rgba(34, 197, 94, 0.22);
+      border-color: rgba(34, 197, 94, 0.75);
+      color: #bbf7d0;
+    }
+
+    /* Bảng địa danh Bạc Liêu */
+    .place-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    .place-table th, .place-table td {
+      text-align: left;
+      padding: 10px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .place-table th {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
     .place-table tr:last-child td {
       border-bottom: none;
     }
 
-    .place-table tbody tr:hover {
-      background-color: var(--table-row-hover);
-    }
-
-    /* Ô liên hệ dưới cùng */
-    .contact-box {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .btn-group {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .action-btn {
-      background-color: var(--accent);
-      color: #06101e;
-      text-decoration: none;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 700;
+    /* Ảnh thư mục anh/0001.jpg */
+    .photo-thumb {
+      width: 100%;
+      max-height: 230px;
+      object-fit: cover;
+      border-radius: 14px;
+      border: 1px solid var(--border);
       cursor: pointer;
-      box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
-      transition: transform 0.2s ease, filter 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+      display: block;
     }
 
-    body.light-mode .action-btn {
+    .photo-caption {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Danh sách buổi tối */
+    .night-list {
+      list-style: none;
+      display: grid;
+      gap: 8px;
+      font-size: 0.94rem;
+    }
+
+    .night-list li {
+      padding: 9px 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Khung phóng to ảnh (Lightbox) */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(3, 6, 14, 0.86);
+      backdrop-filter: blur(8px);
+    }
+
+    .lightbox.open {
+      display: flex;
+    }
+
+    .lightbox-inner {
+      position: relative;
+      max-width: 820px;
+      width: 100%;
+      background: #0f1524;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .lightbox-inner img {
+      max-width: 100%;
+      max-height: 75vh;
+      border-radius: 12px;
+      object-fit: contain;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: rgba(15, 23, 42, 0.9);
       color: #fff;
+      border: 1px solid var(--border);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1rem;
     }
 
-    .action-btn:hover {
+    /* Nút cuộn lên đầu trang */
+    .back-top {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 30;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      background: rgba(15, 23, 42, 0.85);
+      color: var(--text);
+      font-size: 1.05rem;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .back-top.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .back-top:hover {
       transform: translateY(-2px);
-      filter: brightness(1.08);
-      box-shadow: 0 0 20px rgba(56, 189, 248, 0.55);
     }
 
-    .action-btn.copied {
-      background-color: #22c55e;
-      color: #06180d;
-      box-shadow: 0 0 16px rgba(34, 197, 94, 0.45);
-    }
-
-    .action-btn.secondary {
-      background-color: var(--tag-bg);
-      color: var(--text-main);
-      border: 1px solid var(--border-color);
-      box-shadow: none;
-    }
-
-    .action-btn.secondary:hover {
-      border-color: var(--accent);
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
-    }
-
-    /* Tự động xếp thành 1 cột dọc khi mở trên điện thoại */
-    @media (max-width: 640px) {
-      .bento-container {
-        grid-template-columns: 1fr;
+    @media (max-width: 820px) {
+      .card, .span-7, .span-5, .span-4, .span-8 {
+        grid-column: span 12;
       }
-      .full-span {
-        grid-column: span 1;
-      }
-      .mini-stats {
-        grid-template-columns: 1fr;
-      }
-      body {
-        background-attachment: scroll;
+      .universe-wrap {
+        height: 340px;
       }
     }
   </style>
 </head>
 <body>
+  <!-- Vệt sáng chạy theo chuột -->
+  <div class="cursor-glow" id="cursor-glow"></div>
 
-  <div class="bento-container">
-    <!-- Ô 1: Ảnh đại diện & Tên -->
-    <div class="box header-box full-span">
-      <div class="profile-left">
-        <div class="avatar">
-          <img src="avatar.jpg" alt="Avatar">
-        </div>
-        <div class="name-area">
-          <h1>Hoài Khương</h1>
-          <div class="status-line">
-            <span class="dot-online" title="Đang hoạt động"></span>
-            <span id="typing-text">Bạc Liêu • Thích vọc công nghệ &amp; tự do</span>
-            <span class="typing-cursor">|</span>
+  <!-- Khung Ngân hà Tri thức (tràn viền, không viền khung, không chữ mô tả) -->
+  <section class="universe-wrap" aria-label="Knowledge Galaxy">
+    <canvas id="universe-canvas"></canvas>
+  </section>
+
+  <main class="container">
+    <!-- Thanh cài đặt ngôn ngữ & Lite Mode -->
+    <header class="topbar">
+      <div class="lang-group">
+        <button class="btn active" data-lang="vi" type="button">VI</button>
+        <button class="btn" data-lang="en" type="button">EN</button>
+        <button class="btn" data-lang="ru" type="button">RU</button>
+        <span class="shortcut-hint" data-i18n="shortcut_lang">Phím tắt: 1 / 2 / 3</span>
+      </div>
+
+      <div class="tool-group">
+        <button class="btn" id="lite-toggle" type="button" data-i18n="lite_off">⚡ Lite Mode: Tắt</button>
+        <span class="shortcut-hint">L</span>
+      </div>
+    </header>
+
+    <div class="bento">
+      <!-- Ô hồ sơ chính -->
+      <section class="card span-7">
+        <div class="profile-head">
+          <div class="avatar-box" id="avatar-trigger" title="Xem ảnh">
+            <img src="avatar.jpg" alt="Avatar Khương" id="avatar-img" />
+            <div class="fallback-badge" id="avatar-fallback">KH</div>
+          </div>
+
+          <div>
+            <h1 class="name-neon" data-i18n="name_title">Khương</h1>
+            <div class="typewriter-line" id="typewriter"></div>
           </div>
         </div>
-      </div>
-      <button class="theme-btn" onclick="doiMauNen()">🌓 Đổi Sáng / Tối</button>
-    </div>
 
-    <!-- Ô 2: Thông tin cơ bản -->
-    <div class="box">
-      <div class="box-title">📌 Thông tin</div>
-      <ul class="info-list">
-        <li><strong>Quê quán:</strong> Bạc Liêu</li>
-        <li><strong>Công việc:</strong> Giao hàng &amp; Tự do</li>
-        <li><strong>Đang tìm hiểu:</strong> Code web, tự động hóa</li>
-      </ul>
-    </div>
-
-    <!-- Ô 3: Chỉ số & nhịp vọc -->
-    <div class="box">
-      <div class="box-title">⚡ Góc vọc &amp; phong cách</div>
-      <div class="mini-stats">
-        <div class="stat-item">
-          <div class="stat-label">Khu vực</div>
-          <div class="stat-value">Bạc Liêu</div>
+        <div class="meta-row">
+          <span><span class="live-dot"></span><span data-i18n="views_label">Lượt truy cập</span>: <strong id="view-count">...</strong></span>
+          <span>GitHub Pages: <code>khuongccmm-cyber/bio</code></span>
         </div>
-        <div class="stat-item">
-          <div class="stat-label">Mảng quan tâm</div>
-          <div class="stat-value">PC &amp; Web</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-label">Chế độ giải trí</div>
-          <div class="stat-value">ARAM &amp; Chill</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-label">Nhịp hoạt động</div>
-          <div class="stat-value">Sáng chạy • Tối vọc</div>
-        </div>
-      </div>
-    </div>
+      </section>
 
-    <!-- Ô 4: Sở thích (dạng thẻ tag) -->
-    <div class="box full-span">
-      <div class="box-title">🎯 Sở thích</div>
-      <div class="tags">
-        <span class="tag">🎮 Liên Minh (ARAM)</span>
-        <span class="tag">🖥️ Vọc phần cứng PC</span>
-        <span class="tag">🎣 Câu cá</span>
-        <span class="tag">📖 Đọc truyện</span>
-        <span class="tag">🎧 Nhạc Remix</span>
-      </div>
-    </div>
-
-    <!-- Ô 5: Thiên hà xoáy quay quay -->
-    <div class="box full-span">
-      <div class="galaxy-top">
-        <div class="box-title" style="margin-bottom: 0;">🌌 Thiên Hà Xoáy</div>
-        <div class="galaxy-controls">
-          <button type="button" class="mini-btn" id="nut-toc-do" onclick="doiTocDoThienHa()">⚡ Tốc độ: 1x</button>
-          <button type="button" class="mini-btn" id="nut-quay" onclick="batTatQuayThienHa()">⏸ Tạm dừng</button>
+      <!-- Ô liên hệ & nút copy SĐT -->
+      <section class="card span-5">
+        <h2 class="card-title" data-i18n="contact_title">Liên hệ nhanh</h2>
+        <p style="color: var(--muted); font-size: 0.92rem;" data-i18n="contact_desc">
+          Bấm nút bên dưới để sao chép số điện thoại trực tiếp.
+        </p>
+        <div class="phone-box">
+          <span id="phone-number">0900 000 000</span>
+          <button class="copy-btn" id="copy-phone-btn" type="button" data-i18n="copy_btn">Copy SĐT</button>
         </div>
-      </div>
+      </section>
 
-      <canvas id="galaxy-canvas" width="720" height="240"></canvas>
-      <div class="galaxy-note">Rê chuột qua khung để làm lệch góc nhìn thiên hà nhẹ nhàng.</div>
-    </div>
+      <!-- Ô buổi tối thường làm -->
+      <section class="card span-5">
+        <h2 class="card-title" data-i18n="evening_title">Buổi tối thường làm</h2>
+        <ul class="night-list">
+          <li data-i18n="night_1">• Luyện code, đọc tài liệu và thử nghiệm ý tưởng mới</li>
+          <li data-i18n="night_2">• Giải trí nhẹ nhàng, xem video ngắn rồi nghỉ ngơi</li>
+          <li data-i18n="night_3">• Sắp xếp kế hoạch cho ngày hôm sau</li>
+        </ul>
+      </section>
 
-    <!-- Ô 6: Bảng giới thiệu địa danh Bạc Liêu -->
-    <div class="box full-span">
-      <div class="box-title">🗺️ Địa danh nổi bật ở Bạc Liêu</div>
-      <div class="table-wrap">
+      <!-- Ô ảnh từ thư mục anh/0001.jpg -->
+      <section class="card span-7">
+        <h2 class="card-title" data-i18n="gallery_title">Ảnh lưu trữ (anh/0001.jpg)</h2>
+        <img src="anh/0001.jpg" alt="Ảnh 0001" class="photo-thumb" id="gallery-img" />
+        <div class="fallback-badge" id="gallery-fallback" style="border-radius: 14px; height: 150px;">
+          anh/0001.jpg chưa có hoặc sai đường dẫn
+        </div>
+        <p class="photo-caption" id="gallery-caption" data-i18n="gallery_caption">
+          Bấm vào ảnh để phóng to (phím Esc để đóng).
+        </p>
+      </section>
+
+      <!-- Bảng địa danh Bạc Liêu -->
+      <section class="card span-12">
+        <h2 class="card-title" data-i18n="places_title">Địa danh Bạc Liêu</h2>
         <table class="place-table">
           <thead>
             <tr>
-              <th>Địa danh</th>
-              <th>Đặc trưng nổi bật</th>
-              <th>Gợi ý trải nghiệm</th>
+              <th data-i18n="col_place">Địa danh</th>
+              <th data-i18n="col_area">Khu vực</th>
+              <th data-i18n="col_note">Điểm đặc trưng</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><strong>Cánh đồng quạt gió Bạc Liêu</strong></td>
-              <td>Các trụ turbine gió trắng cao vút giữa vùng ven biển lộng gió</td>
-              <td>Dạo mát, chụp ảnh check-in, ngắm cảnh đón gió biển</td>
+              <td data-i18n="p1_name">Nhà Mát</td>
+              <td data-i18n="p1_area">Ven biển / TP. Bạc Liêu</td>
+              <td data-i18n="p1_note">Gió biển mát, nhịp sống quen thuộc gần sông nước</td>
             </tr>
             <tr>
-              <td><strong>Nhà Công tử Bạc Liêu</strong></td>
-              <td>Công trình kiến trúc cổ đặc trưng từ đầu thế kỷ XX gắn với giai thoại xưa</td>
-              <td>Tham quan kiến trúc cổ, tìm hiểu lịch sử và văn hóa địa phương</td>
+              <td data-i18n="p2_name">Cánh đồng quạt gió</td>
+              <td data-i18n="p2_area">Vùng ven biển Bạc Liêu</td>
+              <td data-i18n="p2_note">Các tua-bin gió trắng nổi bật giữa trời mây</td>
             </tr>
             <tr>
-              <td><strong>Khu du lịch Nhà Mát</strong></td>
-              <td>Không gian ven biển sôi động, nhiều khu vui chơi và hàng quán</td>
-              <td>Đi dạo hóng gió, thưởng thức ẩm thực và thư giãn cuối tuần</td>
-            </tr>
-            <tr>
-              <td><strong>Quảng trường Hùng Vương</strong></td>
-              <td>Không gian rộng rãi, nổi bật với biểu tượng cây đờn kìm</td>
-              <td>Đi dạo chiều mát, chụp ảnh lưu niệm tại trung tâm thành phố</td>
+              <td data-i18n="p3_name">Nhà Công tử Bạc Liêu</td>
+              <td data-i18n="p3_area">Trung tâm Bạc Liêu</td>
+              <td data-i18n="p3_note">Công trình kiến trúc cổ mang dấu ấn lịch sử địa phương</td>
             </tr>
           </tbody>
         </table>
-      </div>
+      </section>
     </div>
+  </main>
 
-    <!-- Ô 7: Thông tin buổi tối đang làm -->
-    <div class="box full-span">
-      <div class="box-title">🌙 Buổi tối thường làm</div>
-      <p class="night-note" id="noi-dung-buoi-toi">
-        Đang vọc code web, tùy chỉnh giao diện và thư giãn cuối ngày.
-      </p>
-    </div>
-
-    <!-- Ô 8: Liên hệ & Nút bấm -->
-    <div class="box contact-box full-span">
-      <div>
-        <div class="box-title" style="margin-bottom: 4px;">📬 Kết nối</div>
-        <div id="trang-thai-copy" style="font-size: 14px; color: var(--text-sub);">
-          SĐT / Zalo: <strong style="color: var(--text-main);">0944396154</strong>
-        </div>
-      </div>
-      <div class="btn-group">
-        <button id="nut-copy-sdt" class="action-btn" onclick="copySoDienThoai()">📋 Copy SĐT</button>
-        <a class="action-btn secondary" href="https://www.facebook.com/canten.ko.501/" target="_blank">Facebook</a>
-        <a class="action-btn secondary" href="https://www.tiktok.com/@mydmd1t4" target="_blank">TikTok</a>
-      </div>
+  <!-- Khung xem ảnh phóng to (Lightbox) -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <div class="lightbox-inner">
+      <button class="lightbox-close" id="lightbox-close" type="button" aria-label="Close">✕</button>
+      <img id="lightbox-img" src="" alt="" />
+      <p id="lightbox-text" style="margin-top: 10px; color: var(--muted); font-size: 0.9rem;"></p>
     </div>
   </div>
 
+  <!-- Nút cuộn lên đầu trang -->
+  <button class="back-top" id="back-top" type="button" title="Top">↑</button>
+
   <script>
-    // 1. Chuyển đổi giao diện Sáng / Tối
-    function doiMauNen() {
-      document.body.classList.toggle("light-mode");
+    // 1. Từ điển đa ngôn ngữ VI / EN / RU
+    const I18N = {
+      vi: {
+        shortcut_lang: "Phím tắt: 1 / 2 / 3",
+        lite_off: "⚡ Lite Mode: Tắt",
+        lite_on: "⚡ Lite Mode: Bật",
+        name_title: "Khương",
+        views_label: "Lượt truy cập",
+        contact_title: "Liên hệ nhanh",
+        contact_desc: "Bấm nút bên dưới để sao chép số điện thoại trực tiếp.",
+        copy_btn: "Copy SĐT",
+        copied_btn: "✓ Đã chép số!",
+        evening_title: "Buổi tối thường làm",
+        night_1: "• Luyện code, đọc tài liệu và thử nghiệm ý tưởng mới",
+        night_2: "• Giải trí nhẹ nhàng, xem video ngắn rồi nghỉ ngơi",
+        night_3: "• Sắp xếp kế hoạch cho ngày hôm sau",
+        gallery_title: "Ảnh lưu trữ (anh/0001.jpg)",
+        gallery_caption: "Bấm vào ảnh để phóng to (phím Esc để đóng).",
+        places_title: "Địa danh Bạc Liêu",
+        col_place: "Địa danh",
+        col_area: "Khu vực",
+        col_note: "Điểm đặc trưng",
+        p1_name: "Nhà Mát",
+        p1_area: "Ven biển Bạc Liêu",
+        p1_note: "Gió biển mát, nhịp sống quen thuộc gần sông nước",
+        p2_name: "Cánh đồng quạt gió",
+        p2_area: "Vùng ven biển Bạc Liêu",
+        p2_note: "Các tua-bin gió trắng nổi bật giữa trời mây",
+        p3_name: "Nhà Công tử Bạc Liêu",
+        p3_area: "Trung tâm Bạc Liêu",
+        p3_note: "Công trình kiến trúc cổ mang dấu ấn lịch sử địa phương",
+        typewriter: [
+          "Đang học code & khám phá quy luật tự nhiên",
+          "Bento Grid • Dark Mode • Static GitHub Pages",
+          "Mỗi ngày hiểu thêm một chút công thức và dòng lệnh"
+        ]
+      },
+      en: {
+        shortcut_lang: "Shortcuts: 1 / 2 / 3",
+        lite_off: "⚡ Lite Mode: Off",
+        lite_on: "⚡ Lite Mode: On",
+        name_title: "Khuong",
+        views_label: "Visits",
+        contact_title: "Quick Contact",
+        contact_desc: "Click below to copy the phone number directly.",
+        copy_btn: "Copy Phone",
+        copied_btn: "✓ Copied!",
+        evening_title: "Evening Routine",
+        night_1: "• Practicing code, reading docs, and testing ideas",
+        night_2: "• Casual gaming or short clips before winding down",
+        night_3: "• Planning ahead for tomorrow",
+        gallery_title: "Photo (anh/0001.jpg)",
+        gallery_caption: "Click image to zoom in (press Esc to close).",
+        places_title: "Bac Lieu Landmarks",
+        col_place: "Place",
+        col_area: "Area",
+        col_note: "Highlight",
+        p1_name: "Nha Mat",
+        p1_area: "Bac Lieu Coast",
+        p1_note: "Coastal breeze and familiar river-side rhythm",
+        p2_name: "Wind Farm",
+        p2_area: "Bac Lieu Coastal Zone",
+        p2_note: "White wind turbines standing out against open skies",
+        p3_name: "Bac Lieu Prince House",
+        p3_area: "Central Bac Lieu",
+        p3_note: "Historic heritage architecture of the region",
+        typewriter: [
+          "Learning to code & exploring natural laws",
+          "Bento Grid • Dark Mode • Static GitHub Pages",
+          "One more formula and line of code every day"
+        ]
+      },
+      ru: {
+        shortcut_lang: "Клавиши: 1 / 2 / 3",
+        lite_off: "⚡ Lite Mode: Выкл",
+        lite_on: "⚡ Lite Mode: Вкл",
+        name_title: "Кхыонг",
+        views_label: "Просмотры",
+        contact_title: "Контакты",
+        contact_desc: "Нажмите кнопку, чтобы скопировать номер телефона.",
+        copy_btn: "Копировать",
+        copied_btn: "✓ Скопировано!",
+        evening_title: "Вечерний ритм",
+        night_1: "• Практика кода, чтение и проверка новых идей",
+        night_2: "• Лёгкий отдых и короткие видео перед сном",
+        night_3: "• Подготовка планов на следующий день",
+        gallery_title: "Фото (anh/0001.jpg)",
+        gallery_caption: "Нажмите на фото для увеличения (Esc — закрыть).",
+        places_title: "Места Бакльеу",
+        col_place: "Место",
+        col_area: "Район",
+        col_note: "Особенность",
+        p1_name: "Ня Мат",
+        p1_area: "Побережье Бакльеу",
+        p1_note: "Морской бриз и спокойный ритм у воды",
+        p2_name: "Ветряные турбины",
+        p2_area: "Прибрежная зона Бакльеу",
+        p2_note: "Белые ветряки на фоне широкого неба",
+        p3_name: "Дом принца Бакльеу",
+        p3_area: "Центр Бакльеу",
+        p3_note: "Старинная архитектура с местной историей",
+        typewriter: [
+          "Учу код и изучаю законы природы",
+          "Bento Grid • Dark Mode • Static GitHub Pages",
+          "Каждый день — новая формула и строка кода"
+        ]
+      }
+    };
+
+    let currentLang = localStorage.getItem("bio_lang") || "vi";
+    let isLiteMode = localStorage.getItem("bio_lite") === "1";
+
+    const liteBtn = document.getElementById("lite-toggle");
+
+    function applyLanguage(lang) {
+      if (!I18N[lang]) lang = "vi";
+      currentLang = lang;
+      localStorage.setItem("bio_lang", lang);
+      document.documentElement.lang = lang;
+
+      document.querySelectorAll("[data-lang]").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.lang === lang);
+      });
+
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const key = el.dataset.i18n;
+        if (key === "lite_off" || key === "lite_on") {
+          el.textContent = isLiteMode ? I18N[lang].lite_on : I18N[lang].lite_off;
+        } else if (I18N[lang][key]) {
+          el.textContent = I18N[lang][key];
+        }
+      });
+
+      resetTypewriter();
     }
 
-    // 2. Bấm nút tự động copy số điện thoại vào bộ nhớ tạm
-    function copySoDienThoai() {
-      const sdt = "0944396154";
-      const nutCopy = document.getElementById("nut-copy-sdt");
-      navigator.clipboard.writeText(sdt);
-      document.getElementById("trang-thai-copy").innerHTML = "✅ Đã chép số: <strong>" + sdt + "</strong>";
-      nutCopy.textContent = "✅ Đã chép!";
-      nutCopy.classList.add("copied");
-      setTimeout(() => {
-        nutCopy.textContent = "📋 Copy SĐT";
-        nutCopy.classList.remove("copied");
-      }, 1800);
+    document.querySelectorAll("[data-lang]").forEach((btn) => {
+      btn.addEventListener("click", () => applyLanguage(btn.dataset.lang));
+    });
+
+    function toggleLiteMode(forceState) {
+      isLiteMode = typeof forceState === "boolean" ? forceState : !isLiteMode;
+      localStorage.setItem("bio_lite", isLiteMode ? "1" : "0");
+      liteBtn.classList.toggle("active", isLiteMode);
+      liteBtn.textContent = isLiteMode ? I18N[currentLang].lite_on : I18N[currentLang].lite_off;
+      rebuildUniverse();
     }
 
-    // 3. Hiệu ứng gõ chữ luân phiên dưới tên
-    const danhSachCau = [
-      "Bạc Liêu • Thích vọc công nghệ & tự do",
-      "Đang học code web & tự động hóa",
-      "Buổi tối vọc máy, giải trí & chill"
-    ];
-    let chiSoCau = 0;
-    let chiSoKyTu = 0;
-    let dangXoa = false;
-    const elTyping = document.getElementById("typing-text");
+    liteBtn.addEventListener("click", () => toggleLiteMode());
 
-    function chayHieuUngGoChu() {
-      const cauHienTai = danhSachCau[chiSoCau];
+    // 2. Chữ tự chạy (Typewriter)
+    const twEl = document.getElementById("typewriter");
+    let twPhraseIdx = 0;
+    let twCharIdx = 0;
+    let twDeleting = false;
+    let twTimer = null;
 
-      if (!dangXoa) {
-        chiSoKyTu++;
-        elTyping.textContent = cauHienTai.slice(0, chiSoKyTu);
-        if (chiSoKyTu === cauHienTai.length) {
-          dangXoa = true;
-          setTimeout(chayHieuUngGoChu, 1800);
+    function resetTypewriter() {
+      clearTimeout(twTimer);
+      twPhraseIdx = 0;
+      twCharIdx = 0;
+      twDeleting = false;
+      runTypewriter();
+    }
+
+    function runTypewriter() {
+      const list = I18N[currentLang].typewriter;
+      const currentPhrase = list[twPhraseIdx % list.length];
+
+      if (!twDeleting) {
+        twCharIdx++;
+        twEl.textContent = currentPhrase.slice(0, twCharIdx);
+        if (twCharIdx >= currentPhrase.length) {
+          twDeleting = true;
+          twTimer = setTimeout(runTypewriter, 1700);
           return;
         }
       } else {
-        chiSoKyTu--;
-        elTyping.textContent = cauHienTai.slice(0, chiSoKyTu);
-        if (chiSoKyTu === 0) {
-          dangXoa = false;
-          chiSoCau = (chiSoCau + 1) % danhSachCau.length;
+        twCharIdx--;
+        twEl.textContent = currentPhrase.slice(0, twCharIdx);
+        if (twCharIdx <= 0) {
+          twDeleting = false;
+          twPhraseIdx = (twPhraseIdx + 1) % list.length;
         }
       }
-
-      setTimeout(chayHieuUngGoChu, dangXoa ? 35 : 65);
+      twTimer = setTimeout(runTypewriter, twDeleting ? 35 : 65);
     }
-    setTimeout(chayHieuUngGoChu, 1200);
 
-    // 4. Hiệu ứng vệt sáng chạy theo con trỏ chuột bên trong từng ô
-    document.querySelectorAll(".box").forEach((box) => {
-      box.addEventListener("mousemove", (e) => {
-        const rect = box.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        box.style.setProperty("--mx", x + "px");
-        box.style.setProperty("--my", y + "px");
+    // 3. Spotlight theo chuột trên từng ô Bento + vệt sáng nền
+    const glowEl = document.getElementById("cursor-glow");
+    let mouseX = window.innerWidth * 0.5;
+    let mouseY = window.innerHeight * 0.35;
+
+    window.addEventListener("pointermove", (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      glowEl.style.left = `${mouseX}px`;
+      glowEl.style.top = `${mouseY}px`;
+    });
+
+    document.querySelectorAll(".card").forEach((card) => {
+      card.addEventListener("pointermove", (e) => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+        card.style.setProperty("--my", `${e.clientY - rect.top}px`);
       });
     });
 
-    // 5. Thiên hà xoáy quay quay trên Canvas
-    const gCanvas = document.getElementById("galaxy-canvas");
-    const gCtx = gCanvas.getContext("2d");
-    const nutTocDo = document.getElementById("nut-toc-do");
-    const nutQuay = document.getElementById("nut-quay");
+    // 4. Nút Copy SĐT có phản hồi trực tiếp trên nút
+    const copyBtn = document.getElementById("copy-phone-btn");
+    const phoneEl = document.getElementById("phone-number");
+    let copyTimeout = null;
 
-    const soNhanhXoay = 4;
-    const soHatSao = 260;
-    const bangMauSao = ["#38bdf8", "#a855f7", "#67e8f9", "#e879f9", "#e2e8f0"];
-    const cacTocDo = [1, 2, 0.5];
-    let viTriTocDo = 0;
-    let dangQuay = true;
-    let gocXoayChung = 0;
-    let lechX = 0;
-    let lechY = 0;
+    copyBtn.addEventListener("click", async () => {
+      const textToCopy = phoneEl.textContent.trim();
+      try {
+        await navigator.clipboard.writeText(textToCopy);
+      } catch {
+        const temp = document.createElement("textarea");
+        temp.value = textToCopy;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand("copy");
+        temp.remove();
+      }
+      copyBtn.textContent = I18N[currentLang].copied_btn;
+      copyBtn.classList.add("copied");
+      clearTimeout(copyTimeout);
+      copyTimeout = setTimeout(() => {
+        copyBtn.classList.remove("copied");
+        copyBtn.textContent = I18N[currentLang].copy_btn;
+      }, 2000);
+    });
 
-    const danhSachSao = [];
-    for (let i = 0; i < soHatSao; i++) {
-      const banKinh = 12 + Math.pow(Math.random(), 0.72) * 105;
-      const nhanh = i % soNhanhXoay;
-      const gocNhanh = (nhanh / soNhanhXoay) * Math.PI * 2;
-      const gocXoan = banKinh * 0.048 + (Math.random() - 0.5) * 0.55;
-      danhSachSao.push({
-        banKinh: banKinh,
-        goc: gocNhanh + gocXoan,
-        tocDoRieng: 0.0045 + (115 / (banKinh + 25)) * 0.0055,
-        kichThuoc: 0.8 + Math.random() * 2.1,
-        mau: bangMauSao[i % bangMauSao.length],
-        doSang: 0.4 + Math.random() * 0.6
+    // 5. Đếm lượt truy cập qua CounterAPI (kèm fallback bộ nhớ trình duyệt nếu mạng chặn)
+    const viewCountEl = document.getElementById("view-count");
+    async function loadViewCount() {
+      const namespace = "khuongccmm-cyber-bio";
+      const key = "visits";
+      try {
+        const res = await fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up`);
+        if (!res.ok) throw new Error("Network error");
+        const data = await res.json();
+        if (typeof data.count === "number") {
+          viewCountEl.textContent = data.count.toLocaleString();
+          return;
+        }
+        throw new Error("Invalid payload");
+      } catch {
+        const localKey = "bio_local_visits";
+        const nextVal = Number(localStorage.getItem(localKey) || "0") + 1;
+        localStorage.setItem(localKey, String(nextVal));
+        viewCountEl.textContent = `${nextVal.toLocaleString()} (local)`;
+      }
+    }
+    loadViewCount();
+
+    // 6. Xử lý ảnh dự phòng + Lightbox phóng to ảnh
+    const avatarImg = document.getElementById("avatar-img");
+    const avatarFallback = document.getElementById("avatar-fallback");
+    const avatarTrigger = document.getElementById("avatar-trigger");
+
+    const galleryImg = document.getElementById("gallery-img");
+    const galleryFallback = document.getElementById("gallery-fallback");
+
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightbox-img");
+    const lightboxText = document.getElementById("lightbox-text");
+    const lightboxClose = document.getElementById("lightbox-close");
+
+    function setupImageFallback(imgEl, fallbackEl) {
+      imgEl.addEventListener("error", () => {
+        imgEl.style.display = "none";
+        fallbackEl.style.display = "flex";
+      });
+    }
+    setupImageFallback(avatarImg, avatarFallback);
+    setupImageFallback(galleryImg, galleryFallback);
+
+    function openLightbox(src, caption) {
+      if (!src || src.style?.display === "none") return;
+      lightboxImg.src = src;
+      lightboxText.textContent = caption || "";
+      lightbox.classList.add("open");
+      lightbox.setAttribute("aria-hidden", "false");
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove("open");
+      lightbox.setAttribute("aria-hidden", "true");
+    }
+
+    avatarTrigger.addEventListener("click", () => {
+      if (avatarImg.style.display !== "none") {
+        openLightbox("avatar.jpg", "avatar.jpg");
+      }
+    });
+
+    galleryImg.addEventListener("click", () => {
+      if (galleryImg.style.display !== "none") {
+        openLightbox("anh/0001.jpg", "anh/0001.jpg");
+      }
+    });
+
+    lightboxClose.addEventListener("click", closeLightbox);
+    lightbox.addEventListener("click", (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+
+    // 7. Nút cuộn lên đầu trang + Phím tắt (1/2/3/L/Esc)
+    const backTopBtn = document.getElementById("back-top");
+    window.addEventListener("scroll", () => {
+      backTopBtn.classList.toggle("visible", window.scrollY > 260);
+    });
+    backTopBtn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+    window.addEventListener("keydown", (e) => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+      if (e.key === "1") applyLanguage("vi");
+      else if (e.key === "2") applyLanguage("en");
+      else if (e.key === "3") applyLanguage("ru");
+      else if (e.key.toLowerCase() === "l") toggleLiteMode();
+      else if (e.key === "Escape") closeLightbox();
+    });
+
+    // 8. Khung Ngân hà xoáy + Công thức Toán/Lý + Dòng code bay nổi
+    const canvas = document.getElementById("universe-canvas");
+    const ctx = canvas.getContext("2d");
+    const wrapEl = document.querySelector(".universe-wrap");
+
+    const FORMULAS = [
+      "E = mc²", "F = ma", "∇·E = ρ/ε₀", "iℏ∂ψ/∂t = Ĥψ", "ΔS ≥ 0",
+      "∫ e⁻ˣ² dx = √π", "∑ 1/n² = π²/6", "e^(iπ) + 1 = 0", "λ = h / p",
+      "τ = Iα", "PV = nRT", "lim(x→0) sin(x)/x = 1", "∮ B·dl = μ₀I", "φ = (1+√5)/2"
+    ];
+
+    const CODE_SNIPPETS = [
+      "const bio = { mode: 'dark' };",
+      "while (learning) { keepGoing(); }",
+      "git push origin main",
+      "<canvas id=\"galaxy\" />",
+      "01010011 01010000 01000001",
+      "async function init() { await run(); }",
+      "arr.map(x => x * x)",
+      "if (ready) deploy(githubPages);"
+    ];
+
+    let stars = [];
+    let glyphs = [];
+    let cssW = 0;
+    let cssH = 0;
+    let dpr = 1;
+    let lastTime = performance.now();
+    let galaxyAngle = 0;
+
+    function resizeCanvas() {
+      const rect = wrapEl.getBoundingClientRect();
+      cssW = Math.max(300, rect.width);
+      cssH = Math.max(240, rect.height);
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      canvas.width = Math.floor(cssW * dpr);
+      canvas.height = Math.floor(cssH * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function rebuildUniverse() {
+      resizeCanvas();
+      const starCount = isLiteMode ? 90 : 210;
+      const glyphCount = isLiteMode ? 24 : 58;
+
+      stars = Array.from({ length: starCount }, (_, i) => {
+        const arm = i % 3;
+        const radius = Math.pow(Math.random(), 0.72) * Math.min(cssW, cssH) * 0.48;
+        const baseAngle = arm * ((Math.PI * 2) / 3) + radius * 0.022 + (Math.random() - 0.5) * 0.55;
+        return {
+          radius,
+          angle: baseAngle,
+          speed: (0.08 + Math.random() * 0.14) / (1 + radius * 0.004),
+          size: 0.7 + Math.random() * 1.8,
+          alpha: 0.25 + Math.random() * 0.7,
+          hue: i % 4 === 0 ? "168, 85, 247" : "56, 189, 248"
+        };
+      });
+
+      glyphs = Array.from({ length: glyphCount }, (_, i) => {
+        const isCode = i % 3 === 0;
+        const list = isCode ? CODE_SNIPPETS : FORMULAS;
+        return {
+          text: list[i % list.length],
+          isCode,
+          x: Math.random() * cssW,
+          y: Math.random() * cssH,
+          vx: (Math.random() - 0.5) * 22,
+          vy: -10 - Math.random() * 18,
+          depth: 0.55 + Math.random() * 0.85,
+          phase: Math.random() * Math.PI * 2
+        };
       });
     }
 
-    function doiTocDoThienHa() {
-      viTriTocDo = (viTriTocDo + 1) % cacTocDo.length;
-      nutTocDo.textContent = "⚡ Tốc độ: " + cacTocDo[viTriTocDo] + "x";
-    }
+    function renderUniverse(now) {
+      const dt = Math.min((now - lastTime) / 1000, 0.05);
+      lastTime = now;
 
-    function batTatQuayThienHa() {
-      dangQuay = !dangQuay;
-      nutQuay.textContent = dangQuay ? "⏸ Tạm dừng" : "▶ Quay tiếp";
-    }
+      ctx.clearRect(0, 0, cssW, cssH);
 
-    gCanvas.addEventListener("mousemove", (e) => {
-      const rect = gCanvas.getBoundingClientRect();
-      const tyLeX = (e.clientX - rect.left) / rect.width - 0.5;
-      const tyLeY = (e.clientY - rect.top) / rect.height - 0.5;
-      lechX = tyLeX * 26;
-      lechY = tyLeY * 14;
-    });
+      const cx = cssW * 0.5;
+      const cy = cssH * 0.52;
+      const wrapRect = wrapEl.getBoundingClientRect();
+      const localMouseX = mouseX - wrapRect.left;
+      const localMouseY = mouseY - wrapRect.top;
+      const pointerActive = localMouseX >= 0 && localMouseX <= cssW && localMouseY >= 0 && localMouseY <= cssH;
 
-    gCanvas.addEventListener("mouseleave", () => {
-      lechX = 0;
-      lechY = 0;
-    });
+      galaxyAngle += dt * (isLiteMode ? 0.04 : 0.08);
 
-    function veThienHa() {
-      gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+      // Lõi phát sáng dịu của dải ngân hà
+      const coreGrad = ctx.createRadialGradient(cx, cy, 4, cx, cy, Math.min(cssW, cssH) * 0.42);
+      coreGrad.addColorStop(0, "rgba(168, 85, 247, 0.14)");
+      coreGrad.addColorStop(0.45, "rgba(56, 189, 248, 0.06)");
+      coreGrad.addColorStop(1, "rgba(7, 9, 15, 0)");
+      ctx.fillStyle = coreGrad;
+      ctx.fillRect(0, 0, cssW, cssH);
 
-      const tamX = gCanvas.width / 2 + lechX;
-      const tamY = gCanvas.height / 2 + lechY;
-      const heSoToc = dangQuay ? cacTocDo[viTriTocDo] : 0;
-      gocXoayChung += 0.0025 * heSoToc;
+      // Vẽ hạt bụi sao xoáy
+      for (const s of stars) {
+        s.angle += s.speed * dt * (isLiteMode ? 0.5 : 1);
+        const sx = cx + Math.cos(s.angle + galaxyAngle) * s.radius * 1.35;
+        const sy = cy + Math.sin(s.angle + galaxyAngle) * s.radius * 0.62;
 
-      // Vầng sáng lõi thiên hà
-      const loiSang = gCtx.createRadialGradient(tamX, tamY, 2, tamX, tamY, 56);
-      loiSang.addColorStop(0, "rgba(224, 242, 254, 0.92)");
-      loiSang.addColorStop(0.35, "rgba(56, 189, 248, 0.35)");
-      loiSang.addColorStop(0.7, "rgba(168, 85, 247, 0.14)");
-      loiSang.addColorStop(1, "rgba(9, 13, 22, 0)");
-
-      gCtx.fillStyle = loiSang;
-      gCtx.beginPath();
-      gCtx.arc(tamX, tamY, 56, 0, Math.PI * 2);
-      gCtx.fill();
-
-      // Vẽ từng ngôi sao xoay theo quỹ đạo dẹt nhẹ kiểu thiên hà nghiêng
-      for (let i = 0; i < danhSachSao.length; i++) {
-        const s = danhSachSao[i];
-        s.goc += s.tocDoRieng * heSoToc;
-        const gocHienTai = s.goc + gocXoayChung;
-
-        const x = tamX + Math.cos(gocHienTai) * s.banKinh;
-        const y = tamY + Math.sin(gocHienTai) * s.banKinh * 0.52;
-
-        gCtx.globalAlpha = s.doSang;
-        gCtx.fillStyle = s.mau;
-        gCtx.beginPath();
-        gCtx.arc(x, y, s.kichThuoc, 0, Math.PI * 2);
-        gCtx.fill();
+        ctx.beginPath();
+        ctx.arc(sx, sy, s.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${s.hue}, ${s.alpha})`;
+        ctx.fill();
       }
 
-      gCtx.globalAlpha = 1;
-      requestAnimationFrame(veThienHa);
+      // Vẽ công thức Toán/Lý và dòng lệnh code bay lơ lửng
+      for (const g of glyphs) {
+        g.phase += dt * 1.8;
+        g.x += (g.vx + Math.sin(g.phase) * 8) * dt * (isLiteMode ? 0.5 : 1);
+        g.y += g.vy * dt * (isLiteMode ? 0.5 : 1);
+
+        let boost = 0;
+        if (pointerActive) {
+          const dx = localMouseX - g.x;
+          const dy = localMouseY - g.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist < 140 && dist > 1) {
+            boost = 1 - dist / 140;
+            g.x += (dx / dist) * boost * 28 * dt;
+            g.y += (dy / dist) * boost * 28 * dt;
+          }
+        }
+
+        if (g.y < -24) {
+          g.y = cssH + 20;
+          g.x = Math.random() * cssW;
+        }
+        if (g.x < -120) g.x = cssW + 80;
+        if (g.x > cssW + 120) g.x = -80;
+
+        const fontSize = Math.round((g.isCode ? 12 : 14) * g.depth);
+        ctx.font = `${g.isCode ? "500 " : ""}${fontSize}px ${g.isCode ? "ui-monospace, Consolas, monospace" : "Georgia, serif"}`;
+
+        const baseAlpha = (0.22 + (g.depth - 0.55) * 0.25) + boost * 0.55;
+        ctx.fillStyle = g.isCode
+          ? `rgba(125, 211, 252, ${Math.min(0.95, baseAlpha)})`
+          : `rgba(216, 180, 254, ${Math.min(0.95, baseAlpha)})`;
+
+        ctx.fillText(g.text, g.x, g.y);
+      }
+
+      requestAnimationFrame(renderUniverse);
     }
 
-    veThienHa();
-  </script>
+    window.addEventListener("resize", rebuildUniverse);
 
+    // Khởi tạo toàn bộ trang
+    if (isLiteMode) {
+      liteBtn.classList.add("active");
+    }
+    rebuildUniverse();
+    applyLanguage(currentLang);
+    requestAnimationFrame(renderUniverse);
+  </script>
 </body>
 </html>
