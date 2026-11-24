@@ -3,20 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Khương — Bio & Code Universe</title>
+  <title>Hồ Sơ Cá Nhân - Hoài Khương</title>
   <style>
-    /* Biến màu và hiệu ứng chung (CSS custom properties - biến tùy chỉnh trong CSS) */
+    /* Biến màu sắc (CSS Variables - tên đại diện cho mã màu để đổi giao diện nhanh) */
     :root {
-      --bg: #07090f;
-      --surface: rgba(16, 21, 34, 0.62);
-      --surface-hover: rgba(24, 32, 52, 0.78);
-      --border: rgba(255, 255, 255, 0.08);
-      --text: #eef2ff;
-      --muted: #94a3b8;
+      --bg-color: #090d16;
+      --card-bg: rgba(15, 21, 34, 0.82);
+      --border-color: rgba(56, 189, 248, 0.28);
+      --text-main: #e6edf3;
+      --text-sub: #94a3b8;
       --accent: #38bdf8;
       --accent-2: #a855f7;
-      --ok: #22c55e;
-      --radius: 20px;
+      --neon-soft: 0 0 14px rgba(56, 189, 248, 0.18), 0 0 28px rgba(168, 85, 247, 0.08);
+      --neon-hover: 0 0 18px rgba(56, 189, 248, 0.42), 0 0 36px rgba(168, 85, 247, 0.18);
+      --spotlight: rgba(56, 189, 248, 0.16);
+      --tag-bg: rgba(24, 34, 54, 0.9);
+      --table-head: rgba(56, 189, 248, 0.14);
+      --table-row-hover: rgba(56, 189, 248, 0.06);
+    }
+
+    body.light-mode {
+      --bg-color: #f4f6f8;
+      --card-bg: rgba(255, 255, 255, 0.88);
+      --border-color: rgba(2, 132, 199, 0.22);
+      --text-main: #1f2328;
+      --text-sub: #57606a;
+      --accent: #0284c7;
+      --accent-2: #7e22ce;
+      --neon-soft: 0 6px 18px rgba(15, 23, 42, 0.06);
+      --neon-hover: 0 10px 24px rgba(2, 132, 199, 0.16);
+      --spotlight: rgba(2, 132, 199, 0.1);
+      --tag-bg: rgba(234, 238, 242, 0.94);
+      --table-head: rgba(2, 132, 199, 0.1);
+      --table-row-hover: rgba(2, 132, 199, 0.05);
     }
 
     * {
@@ -30,330 +49,480 @@
     }
 
     body {
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.55;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
       min-height: 100vh;
       overflow-x: hidden;
+      background-image: linear-gradient(rgba(9, 13, 22, 0.84), rgba(9, 13, 22, 0.92)), url("anh/0001.jpg");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      transition: background-color 0.3s, color 0.3s;
     }
 
-    /* Vệt sáng mềm chạy theo con trỏ trên toàn trang */
-    .cursor-glow {
-      position: fixed;
-      width: 420px;
-      height: 420px;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 0;
-      transform: translate(-50%, -50%);
-      background: radial-gradient(circle, rgba(56, 189, 248, 0.11), rgba(168, 85, 247, 0.05) 45%, transparent 70%);
-      transition: opacity 0.25s ease;
+    body.light-mode {
+      background-image: linear-gradient(rgba(244, 246, 248, 0.86), rgba(244, 246, 248, 0.9)), url("anh/0001.jpg");
     }
 
-    /* Khung ngân hà tri thức tràn viền, hòa vào nền tối, không viền khung */
-    .universe-wrap {
+    /* Khung thiên hà + công thức Toán/Lý + dòng code tràn viền, không viền hộp */
+    .universe-stage {
       position: relative;
       width: 100%;
-      height: 440px;
+      height: 320px;
+      margin-bottom: -48px;
       overflow: hidden;
-      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 84%, transparent 100%);
-      mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 84%, transparent 100%);
+      pointer-events: none;
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 78%, transparent 100%);
+      mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 78%, transparent 100%);
     }
 
-    #universe-canvas {
+    #galaxy-canvas {
       display: block;
       width: 100%;
       height: 100%;
+      pointer-events: auto;
+      cursor: grab;
     }
 
-    /* Vùng nội dung chính */
-    .container {
+    #galaxy-canvas:active {
+      cursor: grabbing;
+    }
+
+    /* Khung chính bọc thanh điều khiển và Bento grid */
+    .page-shell {
       position: relative;
       z-index: 1;
-      max-width: 1080px;
-      margin: -60px auto 64px;
-      padding: 0 16px;
+      max-width: 780px;
+      width: 100%;
+      margin: 0 auto 48px;
+      padding: 0 15px;
     }
 
-    /* Thanh điều khiển ngôn ngữ & chế độ nhẹ */
-    .topbar {
+    /* Thanh điều khiển ngôn ngữ & Lite Mode */
+    .control-bar {
       display: flex;
-      flex-wrap: wrap;
-      align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 18px;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
       padding: 10px 14px;
-      border-radius: 16px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      backdrop-filter: blur(14px);
+      border-radius: 14px;
+      background-color: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--neon-soft);
     }
 
-    .lang-group, .tool-group {
+    .lang-switch, .extra-switch {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
     }
 
-    .btn {
-      appearance: none;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.03);
-      color: var(--text);
-      padding: 7px 12px;
-      border-radius: 10px;
-      font-size: 0.88rem;
+    .mini-btn {
+      background-color: var(--tag-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 6px 11px;
+      font-size: 12px;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: border-color 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
     }
 
-    .btn:hover {
-      border-color: rgba(56, 189, 248, 0.45);
-      background: rgba(56, 189, 248, 0.1);
+    .mini-btn:hover {
+      border-color: var(--accent);
+      transform: translateY(-1px);
     }
 
-    .btn.active {
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.24), rgba(168, 85, 247, 0.24));
-      border-color: rgba(56, 189, 248, 0.7);
-      box-shadow: 0 0 18px rgba(56, 189, 248, 0.18);
+    .mini-btn.active {
+      background-color: var(--accent);
+      color: #06101e;
+      border-color: var(--accent);
     }
 
-    .shortcut-hint {
-      font-size: 0.78rem;
-      color: var(--muted);
+    body.light-mode .mini-btn.active {
+      color: #fff;
     }
 
-    /* Bố cục Bento grid */
-    .bento {
+    .key-hint {
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    /* Khung lưới Bento chia các ô thông tin */
+    .bento-container {
+      width: 100%;
       display: grid;
-      grid-template-columns: repeat(12, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 16px;
+      align-content: start;
     }
 
-    /* Thẻ kính mờ kèm ánh sáng spotlight theo chuột bên trong từng ô */
-    .card {
+    /* Kính mờ + viền neon + ánh sáng chạy theo chuột + trượt lên khi mở trang */
+    .box {
       position: relative;
-      grid-column: span 6;
-      padding: 20px;
-      border-radius: var(--radius);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      backdrop-filter: blur(14px);
       overflow: hidden;
-      transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+      background-color: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: var(--neon-soft);
+      opacity: 0;
+      transform: translateY(14px);
+      animation: hienLenMuot 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
     }
 
-    .card::before {
+    .box::before {
       content: "";
       position: absolute;
       inset: 0;
-      pointer-events: none;
-      background: radial-gradient(
-        260px circle at var(--mx, 50%) var(--my, 50%),
-        rgba(56, 189, 248, 0.14),
-        transparent 70%
-      );
+      background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 50%), var(--spotlight), transparent 70%);
       opacity: 0;
+      pointer-events: none;
       transition: opacity 0.25s ease;
     }
 
-    .card:hover {
-      border-color: rgba(56, 189, 248, 0.32);
-      background: var(--surface-hover);
-      transform: translateY(-2px);
-    }
-
-    .card:hover::before {
+    .box:hover::before {
       opacity: 1;
     }
 
-    .span-12 { grid-column: span 12; }
-    .span-7 { grid-column: span 7; }
-    .span-5 { grid-column: span 5; }
-    .span-4 { grid-column: span 4; }
-    .span-8 { grid-column: span 8; }
+    .box:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent);
+      box-shadow: var(--neon-hover);
+    }
 
-    /* Phần đầu hồ sơ */
-    .profile-head {
+    .bento-container .box:nth-child(1) { animation-delay: 0.04s; }
+    .bento-container .box:nth-child(2) { animation-delay: 0.1s; }
+    .bento-container .box:nth-child(3) { animation-delay: 0.16s; }
+    .bento-container .box:nth-child(4) { animation-delay: 0.22s; }
+    .bento-container .box:nth-child(5) { animation-delay: 0.28s; }
+    .bento-container .box:nth-child(6) { animation-delay: 0.34s; }
+    .bento-container .box:nth-child(7) { animation-delay: 0.4s; }
+
+    @keyframes hienLenMuot {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .full-span {
+      grid-column: span 2;
+    }
+
+    .header-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .profile-left {
       display: flex;
       align-items: center;
       gap: 18px;
-      flex-wrap: wrap;
     }
 
-    .avatar-box {
-      position: relative;
-      width: 84px;
-      height: 84px;
+    .avatar {
+      width: 82px;
+      height: 82px;
       border-radius: 50%;
-      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: #fff;
       overflow: hidden;
-      border: 2px solid rgba(56, 189, 248, 0.65);
-      box-shadow: 0 0 24px rgba(56, 189, 248, 0.25);
+      flex-shrink: 0;
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
       cursor: pointer;
     }
 
-    .avatar-box img {
+    .avatar img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
 
-    .fallback-badge {
+    .avatar-fallback {
       display: none;
       width: 100%;
       height: 100%;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #0ea5e9, #7e22ce);
-      color: #fff;
-      font-weight: 700;
-      font-size: 1.25rem;
     }
 
-    .name-neon {
-      font-size: 1.65rem;
-      font-weight: 700;
-      text-shadow: 0 0 18px rgba(56, 189, 248, 0.35);
+    .name-area h1 {
+      font-size: 23px;
+      margin-bottom: 6px;
+      text-shadow: 0 0 12px rgba(56, 189, 248, 0.28);
     }
 
-    .typewriter-line {
-      margin-top: 4px;
-      color: var(--accent);
-      font-weight: 500;
-      min-height: 1.5em;
+    body.light-mode .name-area h1 {
+      text-shadow: none;
     }
 
-    .meta-row {
-      margin-top: 12px;
+    .status-line {
       display: flex;
       align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
-      font-size: 0.9rem;
-      color: var(--muted);
+      gap: 8px;
+      color: var(--text-sub);
+      font-size: 14px;
+      min-height: 20px;
     }
 
-    .live-dot {
-      display: inline-block;
+    .dot-online {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: var(--ok);
-      box-shadow: 0 0 10px var(--ok);
-      margin-right: 6px;
+      background-color: #22c55e;
+      box-shadow: 0 0 10px #22c55e;
+      flex-shrink: 0;
+      animation: nhapNhay 1.6s infinite;
     }
 
-    .card-title {
-      font-size: 1.05rem;
-      font-weight: 650;
-      margin-bottom: 12px;
-      color: #f8fafc;
+    @keyframes nhapNhay {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.85); }
     }
 
-    /* Nút copy số điện thoại */
-    .phone-box {
-      display: flex;
+    .view-pill {
+      margin-top: 8px;
+      display: inline-flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border);
-      margin-top: 10px;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-sub);
+      background-color: var(--tag-bg);
+      border: 1px solid var(--border-color);
+      padding: 4px 10px;
+      border-radius: 999px;
     }
 
-    .copy-btn {
-      appearance: none;
-      border: 1px solid rgba(56, 189, 248, 0.45);
-      background: rgba(56, 189, 248, 0.14);
-      color: #e0f2fe;
+    .typing-cursor {
+      display: inline-block;
+      color: var(--accent);
+      font-weight: bold;
+      animation: conTro 0.8s infinite;
+    }
+
+    @keyframes conTro {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    .theme-btn {
+      background-color: var(--tag-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
       padding: 8px 14px;
       border-radius: 10px;
-      font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
-      white-space: nowrap;
+      font-size: 13px;
+      font-weight: 600;
+      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .copy-btn.copied {
-      background: rgba(34, 197, 94, 0.22);
-      border-color: rgba(34, 197, 94, 0.75);
-      color: #bbf7d0;
+    .theme-btn:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+      transform: translateY(-1px);
     }
 
-    /* Bảng địa danh Bạc Liêu */
+    .box-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--accent);
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    .info-list {
+      list-style: none;
+      line-height: 1.85;
+      font-size: 15px;
+    }
+
+    .mini-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .stat-item {
+      background-color: var(--tag-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 11px 12px;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .stat-item:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-sub);
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      background-color: var(--tag-bg);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      border: 1px solid var(--border-color);
+      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .tag:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .night-note {
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--text-main);
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
     .place-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.92rem;
-    }
-
-    .place-table th, .place-table td {
+      font-size: 14px;
       text-align: left;
-      padding: 10px 10px;
-      border-bottom: 1px solid var(--border);
     }
 
     .place-table th {
-      color: var(--muted);
-      font-weight: 600;
-      font-size: 0.82rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
+      background-color: var(--table-head);
+      color: var(--text-main);
+      font-weight: 700;
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    .place-table td {
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border-color);
+      line-height: 1.55;
+      vertical-align: top;
     }
 
     .place-table tr:last-child td {
       border-bottom: none;
     }
 
-    /* Ảnh thư mục anh/0001.jpg */
-    .photo-thumb {
-      width: 100%;
-      max-height: 230px;
-      object-fit: cover;
-      border-radius: 14px;
-      border: 1px solid var(--border);
+    .place-table tbody tr:hover {
+      background-color: var(--table-row-hover);
+    }
+
+    .contact-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      background-color: var(--accent);
+      color: #06101e;
+      text-decoration: none;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
       cursor: pointer;
-      display: block;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
+      transition: transform 0.2s ease, filter 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .photo-caption {
-      margin-top: 8px;
-      font-size: 0.85rem;
-      color: var(--muted);
+    body.light-mode .action-btn {
+      color: #fff;
     }
 
-    /* Danh sách buổi tối */
-    .night-list {
-      list-style: none;
-      display: grid;
-      gap: 8px;
-      font-size: 0.94rem;
+    .action-btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.55);
     }
 
-    .night-list li {
-      padding: 9px 12px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+    .action-btn.copied {
+      background-color: #22c55e;
+      color: #06180d;
+      box-shadow: 0 0 16px rgba(34, 197, 94, 0.45);
+    }
+
+    .action-btn.secondary {
+      background-color: var(--tag-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      box-shadow: none;
+    }
+
+    .action-btn.secondary:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
     }
 
     /* Khung phóng to ảnh (Lightbox) */
     .lightbox {
       position: fixed;
       inset: 0;
-      z-index: 50;
+      z-index: 60;
       display: none;
       align-items: center;
       justify-content: center;
       padding: 20px;
-      background: rgba(3, 6, 14, 0.86);
+      background: rgba(4, 7, 15, 0.86);
       backdrop-filter: blur(8px);
     }
 
@@ -361,21 +530,21 @@
       display: flex;
     }
 
-    .lightbox-inner {
+    .lightbox-box {
       position: relative;
-      max-width: 820px;
+      max-width: 760px;
       width: 100%;
-      background: #0f1524;
-      border: 1px solid var(--border);
-      border-radius: 18px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
       padding: 14px;
       text-align: center;
     }
 
-    .lightbox-inner img {
+    .lightbox-box img {
       max-width: 100%;
       max-height: 75vh;
-      border-radius: 12px;
+      border-radius: 10px;
       object-fit: contain;
     }
 
@@ -383,33 +552,33 @@
       position: absolute;
       top: 10px;
       right: 12px;
-      background: rgba(15, 23, 42, 0.9);
-      color: #fff;
-      border: 1px solid var(--border);
-      width: 34px;
-      height: 34px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
+      border: 1px solid var(--border-color);
+      background: var(--tag-bg);
+      color: var(--text-main);
       cursor: pointer;
-      font-size: 1rem;
+      font-weight: bold;
     }
 
     /* Nút cuộn lên đầu trang */
     .back-top {
       position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 30;
-      width: 42px;
-      height: 42px;
+      right: 16px;
+      bottom: 16px;
+      z-index: 40;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      border: 1px solid rgba(56, 189, 248, 0.45);
-      background: rgba(15, 23, 42, 0.85);
-      color: var(--text);
-      font-size: 1.05rem;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-main);
+      font-size: 16px;
       cursor: pointer;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.2s ease, transform 0.2s ease;
+      transition: opacity 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
     }
 
     .back-top.visible {
@@ -418,629 +587,51 @@
     }
 
     .back-top:hover {
+      border-color: var(--accent);
       transform: translateY(-2px);
     }
 
-    @media (max-width: 820px) {
-      .card, .span-7, .span-5, .span-4, .span-8 {
-        grid-column: span 12;
+    @media (max-width: 640px) {
+      .bento-container {
+        grid-template-columns: 1fr;
       }
-      .universe-wrap {
-        height: 340px;
+      .full-span {
+        grid-column: span 1;
+      }
+      .mini-stats {
+        grid-template-columns: 1fr;
+      }
+      .universe-stage {
+        height: 240px;
+        margin-bottom: -36px;
+      }
+      body {
+        background-attachment: scroll;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Vệt sáng chạy theo chuột -->
-  <div class="cursor-glow" id="cursor-glow"></div>
 
-  <!-- Khung Ngân hà Tri thức (tràn viền, không viền khung, không chữ mô tả) -->
-  <section class="universe-wrap" aria-label="Knowledge Galaxy">
-    <canvas id="universe-canvas"></canvas>
-  </section>
-
-  <main class="container">
-    <!-- Thanh cài đặt ngôn ngữ & Lite Mode -->
-    <header class="topbar">
-      <div class="lang-group">
-        <button class="btn active" data-lang="vi" type="button">VI</button>
-        <button class="btn" data-lang="en" type="button">EN</button>
-        <button class="btn" data-lang="ru" type="button">RU</button>
-        <span class="shortcut-hint" data-i18n="shortcut_lang">Phím tắt: 1 / 2 / 3</span>
-      </div>
-
-      <div class="tool-group">
-        <button class="btn" id="lite-toggle" type="button" data-i18n="lite_off">⚡ Lite Mode: Tắt</button>
-        <span class="shortcut-hint">L</span>
-      </div>
-    </header>
-
-    <div class="bento">
-      <!-- Ô hồ sơ chính -->
-      <section class="card span-7">
-        <div class="profile-head">
-          <div class="avatar-box" id="avatar-trigger" title="Xem ảnh">
-            <img src="avatar.jpg" alt="Avatar Khương" id="avatar-img" />
-            <div class="fallback-badge" id="avatar-fallback">KH</div>
-          </div>
-
-          <div>
-            <h1 class="name-neon" data-i18n="name_title">Khương</h1>
-            <div class="typewriter-line" id="typewriter"></div>
-          </div>
-        </div>
-
-        <div class="meta-row">
-          <span><span class="live-dot"></span><span data-i18n="views_label">Lượt truy cập</span>: <strong id="view-count">...</strong></span>
-          <span>GitHub Pages: <code>khuongccmm-cyber/bio</code></span>
-        </div>
-      </section>
-
-      <!-- Ô liên hệ & nút copy SĐT -->
-      <section class="card span-5">
-        <h2 class="card-title" data-i18n="contact_title">Liên hệ nhanh</h2>
-        <p style="color: var(--muted); font-size: 0.92rem;" data-i18n="contact_desc">
-          Bấm nút bên dưới để sao chép số điện thoại trực tiếp.
-        </p>
-        <div class="phone-box">
-          <span id="phone-number">0900 000 000</span>
-          <button class="copy-btn" id="copy-phone-btn" type="button" data-i18n="copy_btn">Copy SĐT</button>
-        </div>
-      </section>
-
-      <!-- Ô buổi tối thường làm -->
-      <section class="card span-5">
-        <h2 class="card-title" data-i18n="evening_title">Buổi tối thường làm</h2>
-        <ul class="night-list">
-          <li data-i18n="night_1">• Luyện code, đọc tài liệu và thử nghiệm ý tưởng mới</li>
-          <li data-i18n="night_2">• Giải trí nhẹ nhàng, xem video ngắn rồi nghỉ ngơi</li>
-          <li data-i18n="night_3">• Sắp xếp kế hoạch cho ngày hôm sau</li>
-        </ul>
-      </section>
-
-      <!-- Ô ảnh từ thư mục anh/0001.jpg -->
-      <section class="card span-7">
-        <h2 class="card-title" data-i18n="gallery_title">Ảnh lưu trữ (anh/0001.jpg)</h2>
-        <img src="anh/0001.jpg" alt="Ảnh 0001" class="photo-thumb" id="gallery-img" />
-        <div class="fallback-badge" id="gallery-fallback" style="border-radius: 14px; height: 150px;">
-          anh/0001.jpg chưa có hoặc sai đường dẫn
-        </div>
-        <p class="photo-caption" id="gallery-caption" data-i18n="gallery_caption">
-          Bấm vào ảnh để phóng to (phím Esc để đóng).
-        </p>
-      </section>
-
-      <!-- Bảng địa danh Bạc Liêu -->
-      <section class="card span-12">
-        <h2 class="card-title" data-i18n="places_title">Địa danh Bạc Liêu</h2>
-        <table class="place-table">
-          <thead>
-            <tr>
-              <th data-i18n="col_place">Địa danh</th>
-              <th data-i18n="col_area">Khu vực</th>
-              <th data-i18n="col_note">Điểm đặc trưng</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td data-i18n="p1_name">Nhà Mát</td>
-              <td data-i18n="p1_area">Ven biển / TP. Bạc Liêu</td>
-              <td data-i18n="p1_note">Gió biển mát, nhịp sống quen thuộc gần sông nước</td>
-            </tr>
-            <tr>
-              <td data-i18n="p2_name">Cánh đồng quạt gió</td>
-              <td data-i18n="p2_area">Vùng ven biển Bạc Liêu</td>
-              <td data-i18n="p2_note">Các tua-bin gió trắng nổi bật giữa trời mây</td>
-            </tr>
-            <tr>
-              <td data-i18n="p3_name">Nhà Công tử Bạc Liêu</td>
-              <td data-i18n="p3_area">Trung tâm Bạc Liêu</td>
-              <td data-i18n="p3_note">Công trình kiến trúc cổ mang dấu ấn lịch sử địa phương</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-    </div>
-  </main>
-
-  <!-- Khung xem ảnh phóng to (Lightbox) -->
-  <div class="lightbox" id="lightbox" aria-hidden="true">
-    <div class="lightbox-inner">
-      <button class="lightbox-close" id="lightbox-close" type="button" aria-label="Close">✕</button>
-      <img id="lightbox-img" src="" alt="" />
-      <p id="lightbox-text" style="margin-top: 10px; color: var(--muted); font-size: 0.9rem;"></p>
-    </div>
+  <!-- Khung ngân hà xoáy + công thức Toán/Lý + dòng code tràn viền (không viền khung, không chữ mô tả) -->
+  <div class="universe-stage">
+    <canvas id="galaxy-canvas"></canvas>
   </div>
 
-  <!-- Nút cuộn lên đầu trang -->
-  <button class="back-top" id="back-top" type="button" title="Top">↑</button>
+  <div class="page-shell">
+    <!-- Thanh cài đặt ngôn ngữ VI / EN / RU & Lite Mode -->
+    <div class="control-bar">
+      <div class="lang-switch">
+        <button type="button" class="mini-btn active" data-lang="vi">VI</button>
+        <button type="button" class="mini-btn" data-lang="en">EN</button>
+        <button type="button" class="mini-btn" data-lang="ru">RU</button>
+        <span class="key-hint" data-i18n="hint_lang">[1/2/3]</span>
+      </div>
 
-  <script>
-    // 1. Từ điển đa ngôn ngữ VI / EN / RU
-    const I18N = {
-      vi: {
-        shortcut_lang: "Phím tắt: 1 / 2 / 3",
-        lite_off: "⚡ Lite Mode: Tắt",
-        lite_on: "⚡ Lite Mode: Bật",
-        name_title: "Khương",
-        views_label: "Lượt truy cập",
-        contact_title: "Liên hệ nhanh",
-        contact_desc: "Bấm nút bên dưới để sao chép số điện thoại trực tiếp.",
-        copy_btn: "Copy SĐT",
-        copied_btn: "✓ Đã chép số!",
-        evening_title: "Buổi tối thường làm",
-        night_1: "• Luyện code, đọc tài liệu và thử nghiệm ý tưởng mới",
-        night_2: "• Giải trí nhẹ nhàng, xem video ngắn rồi nghỉ ngơi",
-        night_3: "• Sắp xếp kế hoạch cho ngày hôm sau",
-        gallery_title: "Ảnh lưu trữ (anh/0001.jpg)",
-        gallery_caption: "Bấm vào ảnh để phóng to (phím Esc để đóng).",
-        places_title: "Địa danh Bạc Liêu",
-        col_place: "Địa danh",
-        col_area: "Khu vực",
-        col_note: "Điểm đặc trưng",
-        p1_name: "Nhà Mát",
-        p1_area: "Ven biển Bạc Liêu",
-        p1_note: "Gió biển mát, nhịp sống quen thuộc gần sông nước",
-        p2_name: "Cánh đồng quạt gió",
-        p2_area: "Vùng ven biển Bạc Liêu",
-        p2_note: "Các tua-bin gió trắng nổi bật giữa trời mây",
-        p3_name: "Nhà Công tử Bạc Liêu",
-        p3_area: "Trung tâm Bạc Liêu",
-        p3_note: "Công trình kiến trúc cổ mang dấu ấn lịch sử địa phương",
-        typewriter: [
-          "Đang học code & khám phá quy luật tự nhiên",
-          "Bento Grid • Dark Mode • Static GitHub Pages",
-          "Mỗi ngày hiểu thêm một chút công thức và dòng lệnh"
-        ]
-      },
-      en: {
-        shortcut_lang: "Shortcuts: 1 / 2 / 3",
-        lite_off: "⚡ Lite Mode: Off",
-        lite_on: "⚡ Lite Mode: On",
-        name_title: "Khuong",
-        views_label: "Visits",
-        contact_title: "Quick Contact",
-        contact_desc: "Click below to copy the phone number directly.",
-        copy_btn: "Copy Phone",
-        copied_btn: "✓ Copied!",
-        evening_title: "Evening Routine",
-        night_1: "• Practicing code, reading docs, and testing ideas",
-        night_2: "• Casual gaming or short clips before winding down",
-        night_3: "• Planning ahead for tomorrow",
-        gallery_title: "Photo (anh/0001.jpg)",
-        gallery_caption: "Click image to zoom in (press Esc to close).",
-        places_title: "Bac Lieu Landmarks",
-        col_place: "Place",
-        col_area: "Area",
-        col_note: "Highlight",
-        p1_name: "Nha Mat",
-        p1_area: "Bac Lieu Coast",
-        p1_note: "Coastal breeze and familiar river-side rhythm",
-        p2_name: "Wind Farm",
-        p2_area: "Bac Lieu Coastal Zone",
-        p2_note: "White wind turbines standing out against open skies",
-        p3_name: "Bac Lieu Prince House",
-        p3_area: "Central Bac Lieu",
-        p3_note: "Historic heritage architecture of the region",
-        typewriter: [
-          "Learning to code & exploring natural laws",
-          "Bento Grid • Dark Mode • Static GitHub Pages",
-          "One more formula and line of code every day"
-        ]
-      },
-      ru: {
-        shortcut_lang: "Клавиши: 1 / 2 / 3",
-        lite_off: "⚡ Lite Mode: Выкл",
-        lite_on: "⚡ Lite Mode: Вкл",
-        name_title: "Кхыонг",
-        views_label: "Просмотры",
-        contact_title: "Контакты",
-        contact_desc: "Нажмите кнопку, чтобы скопировать номер телефона.",
-        copy_btn: "Копировать",
-        copied_btn: "✓ Скопировано!",
-        evening_title: "Вечерний ритм",
-        night_1: "• Практика кода, чтение и проверка новых идей",
-        night_2: "• Лёгкий отдых и короткие видео перед сном",
-        night_3: "• Подготовка планов на следующий день",
-        gallery_title: "Фото (anh/0001.jpg)",
-        gallery_caption: "Нажмите на фото для увеличения (Esc — закрыть).",
-        places_title: "Места Бакльеу",
-        col_place: "Место",
-        col_area: "Район",
-        col_note: "Особенность",
-        p1_name: "Ня Мат",
-        p1_area: "Побережье Бакльеу",
-        p1_note: "Морской бриз и спокойный ритм у воды",
-        p2_name: "Ветряные турбины",
-        p2_area: "Прибрежная зона Бакльеу",
-        p2_note: "Белые ветряки на фоне широкого неба",
-        p3_name: "Дом принца Бакльеу",
-        p3_area: "Центр Бакльеу",
-        p3_note: "Старинная архитектура с местной историей",
-        typewriter: [
-          "Учу код и изучаю законы природы",
-          "Bento Grid • Dark Mode • Static GitHub Pages",
-          "Каждый день — новая формула и строка кода"
-        ]
-      }
-    };
+      <div class="extra-switch">
+        <button type="button" class="mini-btn" id="btn-lite" onclick="batTatLiteMode()">⚡ Lite: Off</button>
+        <span class="key-hint">[L]</span>
+      </div>
+    </div>
 
-    let currentLang = localStorage.getItem("bio_lang") || "vi";
-    let isLiteMode = localStorage.getItem("bio_lite") === "1";
-
-    const liteBtn = document.getElementById("lite-toggle");
-
-    function applyLanguage(lang) {
-      if (!I18N[lang]) lang = "vi";
-      currentLang = lang;
-      localStorage.setItem("bio_lang", lang);
-      document.documentElement.lang = lang;
-
-      document.querySelectorAll("[data-lang]").forEach((btn) => {
-        btn.classList.toggle("active", btn.dataset.lang === lang);
-      });
-
-      document.querySelectorAll("[data-i18n]").forEach((el) => {
-        const key = el.dataset.i18n;
-        if (key === "lite_off" || key === "lite_on") {
-          el.textContent = isLiteMode ? I18N[lang].lite_on : I18N[lang].lite_off;
-        } else if (I18N[lang][key]) {
-          el.textContent = I18N[lang][key];
-        }
-      });
-
-      resetTypewriter();
-    }
-
-    document.querySelectorAll("[data-lang]").forEach((btn) => {
-      btn.addEventListener("click", () => applyLanguage(btn.dataset.lang));
-    });
-
-    function toggleLiteMode(forceState) {
-      isLiteMode = typeof forceState === "boolean" ? forceState : !isLiteMode;
-      localStorage.setItem("bio_lite", isLiteMode ? "1" : "0");
-      liteBtn.classList.toggle("active", isLiteMode);
-      liteBtn.textContent = isLiteMode ? I18N[currentLang].lite_on : I18N[currentLang].lite_off;
-      rebuildUniverse();
-    }
-
-    liteBtn.addEventListener("click", () => toggleLiteMode());
-
-    // 2. Chữ tự chạy (Typewriter)
-    const twEl = document.getElementById("typewriter");
-    let twPhraseIdx = 0;
-    let twCharIdx = 0;
-    let twDeleting = false;
-    let twTimer = null;
-
-    function resetTypewriter() {
-      clearTimeout(twTimer);
-      twPhraseIdx = 0;
-      twCharIdx = 0;
-      twDeleting = false;
-      runTypewriter();
-    }
-
-    function runTypewriter() {
-      const list = I18N[currentLang].typewriter;
-      const currentPhrase = list[twPhraseIdx % list.length];
-
-      if (!twDeleting) {
-        twCharIdx++;
-        twEl.textContent = currentPhrase.slice(0, twCharIdx);
-        if (twCharIdx >= currentPhrase.length) {
-          twDeleting = true;
-          twTimer = setTimeout(runTypewriter, 1700);
-          return;
-        }
-      } else {
-        twCharIdx--;
-        twEl.textContent = currentPhrase.slice(0, twCharIdx);
-        if (twCharIdx <= 0) {
-          twDeleting = false;
-          twPhraseIdx = (twPhraseIdx + 1) % list.length;
-        }
-      }
-      twTimer = setTimeout(runTypewriter, twDeleting ? 35 : 65);
-    }
-
-    // 3. Spotlight theo chuột trên từng ô Bento + vệt sáng nền
-    const glowEl = document.getElementById("cursor-glow");
-    let mouseX = window.innerWidth * 0.5;
-    let mouseY = window.innerHeight * 0.35;
-
-    window.addEventListener("pointermove", (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      glowEl.style.left = `${mouseX}px`;
-      glowEl.style.top = `${mouseY}px`;
-    });
-
-    document.querySelectorAll(".card").forEach((card) => {
-      card.addEventListener("pointermove", (e) => {
-        const rect = card.getBoundingClientRect();
-        card.style.setProperty("--mx", `${e.clientX - rect.left}px`);
-        card.style.setProperty("--my", `${e.clientY - rect.top}px`);
-      });
-    });
-
-    // 4. Nút Copy SĐT có phản hồi trực tiếp trên nút
-    const copyBtn = document.getElementById("copy-phone-btn");
-    const phoneEl = document.getElementById("phone-number");
-    let copyTimeout = null;
-
-    copyBtn.addEventListener("click", async () => {
-      const textToCopy = phoneEl.textContent.trim();
-      try {
-        await navigator.clipboard.writeText(textToCopy);
-      } catch {
-        const temp = document.createElement("textarea");
-        temp.value = textToCopy;
-        document.body.appendChild(temp);
-        temp.select();
-        document.execCommand("copy");
-        temp.remove();
-      }
-      copyBtn.textContent = I18N[currentLang].copied_btn;
-      copyBtn.classList.add("copied");
-      clearTimeout(copyTimeout);
-      copyTimeout = setTimeout(() => {
-        copyBtn.classList.remove("copied");
-        copyBtn.textContent = I18N[currentLang].copy_btn;
-      }, 2000);
-    });
-
-    // 5. Đếm lượt truy cập qua CounterAPI (kèm fallback bộ nhớ trình duyệt nếu mạng chặn)
-    const viewCountEl = document.getElementById("view-count");
-    async function loadViewCount() {
-      const namespace = "khuongccmm-cyber-bio";
-      const key = "visits";
-      try {
-        const res = await fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up`);
-        if (!res.ok) throw new Error("Network error");
-        const data = await res.json();
-        if (typeof data.count === "number") {
-          viewCountEl.textContent = data.count.toLocaleString();
-          return;
-        }
-        throw new Error("Invalid payload");
-      } catch {
-        const localKey = "bio_local_visits";
-        const nextVal = Number(localStorage.getItem(localKey) || "0") + 1;
-        localStorage.setItem(localKey, String(nextVal));
-        viewCountEl.textContent = `${nextVal.toLocaleString()} (local)`;
-      }
-    }
-    loadViewCount();
-
-    // 6. Xử lý ảnh dự phòng + Lightbox phóng to ảnh
-    const avatarImg = document.getElementById("avatar-img");
-    const avatarFallback = document.getElementById("avatar-fallback");
-    const avatarTrigger = document.getElementById("avatar-trigger");
-
-    const galleryImg = document.getElementById("gallery-img");
-    const galleryFallback = document.getElementById("gallery-fallback");
-
-    const lightbox = document.getElementById("lightbox");
-    const lightboxImg = document.getElementById("lightbox-img");
-    const lightboxText = document.getElementById("lightbox-text");
-    const lightboxClose = document.getElementById("lightbox-close");
-
-    function setupImageFallback(imgEl, fallbackEl) {
-      imgEl.addEventListener("error", () => {
-        imgEl.style.display = "none";
-        fallbackEl.style.display = "flex";
-      });
-    }
-    setupImageFallback(avatarImg, avatarFallback);
-    setupImageFallback(galleryImg, galleryFallback);
-
-    function openLightbox(src, caption) {
-      if (!src || src.style?.display === "none") return;
-      lightboxImg.src = src;
-      lightboxText.textContent = caption || "";
-      lightbox.classList.add("open");
-      lightbox.setAttribute("aria-hidden", "false");
-    }
-
-    function closeLightbox() {
-      lightbox.classList.remove("open");
-      lightbox.setAttribute("aria-hidden", "true");
-    }
-
-    avatarTrigger.addEventListener("click", () => {
-      if (avatarImg.style.display !== "none") {
-        openLightbox("avatar.jpg", "avatar.jpg");
-      }
-    });
-
-    galleryImg.addEventListener("click", () => {
-      if (galleryImg.style.display !== "none") {
-        openLightbox("anh/0001.jpg", "anh/0001.jpg");
-      }
-    });
-
-    lightboxClose.addEventListener("click", closeLightbox);
-    lightbox.addEventListener("click", (e) => {
-      if (e.target === lightbox) closeLightbox();
-    });
-
-    // 7. Nút cuộn lên đầu trang + Phím tắt (1/2/3/L/Esc)
-    const backTopBtn = document.getElementById("back-top");
-    window.addEventListener("scroll", () => {
-      backTopBtn.classList.toggle("visible", window.scrollY > 260);
-    });
-    backTopBtn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
-
-    window.addEventListener("keydown", (e) => {
-      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
-      if (e.key === "1") applyLanguage("vi");
-      else if (e.key === "2") applyLanguage("en");
-      else if (e.key === "3") applyLanguage("ru");
-      else if (e.key.toLowerCase() === "l") toggleLiteMode();
-      else if (e.key === "Escape") closeLightbox();
-    });
-
-    // 8. Khung Ngân hà xoáy + Công thức Toán/Lý + Dòng code bay nổi
-    const canvas = document.getElementById("universe-canvas");
-    const ctx = canvas.getContext("2d");
-    const wrapEl = document.querySelector(".universe-wrap");
-
-    const FORMULAS = [
-      "E = mc²", "F = ma", "∇·E = ρ/ε₀", "iℏ∂ψ/∂t = Ĥψ", "ΔS ≥ 0",
-      "∫ e⁻ˣ² dx = √π", "∑ 1/n² = π²/6", "e^(iπ) + 1 = 0", "λ = h / p",
-      "τ = Iα", "PV = nRT", "lim(x→0) sin(x)/x = 1", "∮ B·dl = μ₀I", "φ = (1+√5)/2"
-    ];
-
-    const CODE_SNIPPETS = [
-      "const bio = { mode: 'dark' };",
-      "while (learning) { keepGoing(); }",
-      "git push origin main",
-      "<canvas id=\"galaxy\" />",
-      "01010011 01010000 01000001",
-      "async function init() { await run(); }",
-      "arr.map(x => x * x)",
-      "if (ready) deploy(githubPages);"
-    ];
-
-    let stars = [];
-    let glyphs = [];
-    let cssW = 0;
-    let cssH = 0;
-    let dpr = 1;
-    let lastTime = performance.now();
-    let galaxyAngle = 0;
-
-    function resizeCanvas() {
-      const rect = wrapEl.getBoundingClientRect();
-      cssW = Math.max(300, rect.width);
-      cssH = Math.max(240, rect.height);
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-      canvas.width = Math.floor(cssW * dpr);
-      canvas.height = Math.floor(cssH * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-
-    function rebuildUniverse() {
-      resizeCanvas();
-      const starCount = isLiteMode ? 90 : 210;
-      const glyphCount = isLiteMode ? 24 : 58;
-
-      stars = Array.from({ length: starCount }, (_, i) => {
-        const arm = i % 3;
-        const radius = Math.pow(Math.random(), 0.72) * Math.min(cssW, cssH) * 0.48;
-        const baseAngle = arm * ((Math.PI * 2) / 3) + radius * 0.022 + (Math.random() - 0.5) * 0.55;
-        return {
-          radius,
-          angle: baseAngle,
-          speed: (0.08 + Math.random() * 0.14) / (1 + radius * 0.004),
-          size: 0.7 + Math.random() * 1.8,
-          alpha: 0.25 + Math.random() * 0.7,
-          hue: i % 4 === 0 ? "168, 85, 247" : "56, 189, 248"
-        };
-      });
-
-      glyphs = Array.from({ length: glyphCount }, (_, i) => {
-        const isCode = i % 3 === 0;
-        const list = isCode ? CODE_SNIPPETS : FORMULAS;
-        return {
-          text: list[i % list.length],
-          isCode,
-          x: Math.random() * cssW,
-          y: Math.random() * cssH,
-          vx: (Math.random() - 0.5) * 22,
-          vy: -10 - Math.random() * 18,
-          depth: 0.55 + Math.random() * 0.85,
-          phase: Math.random() * Math.PI * 2
-        };
-      });
-    }
-
-    function renderUniverse(now) {
-      const dt = Math.min((now - lastTime) / 1000, 0.05);
-      lastTime = now;
-
-      ctx.clearRect(0, 0, cssW, cssH);
-
-      const cx = cssW * 0.5;
-      const cy = cssH * 0.52;
-      const wrapRect = wrapEl.getBoundingClientRect();
-      const localMouseX = mouseX - wrapRect.left;
-      const localMouseY = mouseY - wrapRect.top;
-      const pointerActive = localMouseX >= 0 && localMouseX <= cssW && localMouseY >= 0 && localMouseY <= cssH;
-
-      galaxyAngle += dt * (isLiteMode ? 0.04 : 0.08);
-
-      // Lõi phát sáng dịu của dải ngân hà
-      const coreGrad = ctx.createRadialGradient(cx, cy, 4, cx, cy, Math.min(cssW, cssH) * 0.42);
-      coreGrad.addColorStop(0, "rgba(168, 85, 247, 0.14)");
-      coreGrad.addColorStop(0.45, "rgba(56, 189, 248, 0.06)");
-      coreGrad.addColorStop(1, "rgba(7, 9, 15, 0)");
-      ctx.fillStyle = coreGrad;
-      ctx.fillRect(0, 0, cssW, cssH);
-
-      // Vẽ hạt bụi sao xoáy
-      for (const s of stars) {
-        s.angle += s.speed * dt * (isLiteMode ? 0.5 : 1);
-        const sx = cx + Math.cos(s.angle + galaxyAngle) * s.radius * 1.35;
-        const sy = cy + Math.sin(s.angle + galaxyAngle) * s.radius * 0.62;
-
-        ctx.beginPath();
-        ctx.arc(sx, sy, s.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${s.hue}, ${s.alpha})`;
-        ctx.fill();
-      }
-
-      // Vẽ công thức Toán/Lý và dòng lệnh code bay lơ lửng
-      for (const g of glyphs) {
-        g.phase += dt * 1.8;
-        g.x += (g.vx + Math.sin(g.phase) * 8) * dt * (isLiteMode ? 0.5 : 1);
-        g.y += g.vy * dt * (isLiteMode ? 0.5 : 1);
-
-        let boost = 0;
-        if (pointerActive) {
-          const dx = localMouseX - g.x;
-          const dy = localMouseY - g.y;
-          const dist = Math.hypot(dx, dy);
-          if (dist < 140 && dist > 1) {
-            boost = 1 - dist / 140;
-            g.x += (dx / dist) * boost * 28 * dt;
-            g.y += (dy / dist) * boost * 28 * dt;
-          }
-        }
-
-        if (g.y < -24) {
-          g.y = cssH + 20;
-          g.x = Math.random() * cssW;
-        }
-        if (g.x < -120) g.x = cssW + 80;
-        if (g.x > cssW + 120) g.x = -80;
-
-        const fontSize = Math.round((g.isCode ? 12 : 14) * g.depth);
-        ctx.font = `${g.isCode ? "500 " : ""}${fontSize}px ${g.isCode ? "ui-monospace, Consolas, monospace" : "Georgia, serif"}`;
-
-        const baseAlpha = (0.22 + (g.depth - 0.55) * 0.25) + boost * 0.55;
-        ctx.fillStyle = g.isCode
-          ? `rgba(125, 211, 252, ${Math.min(0.95, baseAlpha)})`
-          : `rgba(216, 180, 254, ${Math.min(0.95, baseAlpha)})`;
-
-        ctx.fillText(g.text, g.x, g.y);
-      }
-
-      requestAnimationFrame(renderUniverse);
-    }
-
-    window.addEventListener("resize", rebuildUniverse);
-
-    // Khởi tạo toàn bộ trang
-    if (isLiteMode) {
-      liteBtn.classList.add("active");
-    }
-    rebuildUniverse();
-    applyLanguage(currentLang);
-    requestAnimationFrame(renderUniverse);
-  </script>
-</body>
-</html>
+    <div class
